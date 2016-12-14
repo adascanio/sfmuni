@@ -19,18 +19,18 @@
   "author": "adascanio",
   "license": "MIT",
   "dependencies": {
-    "angular": "^1.6.0",
-    "angular-route": "^1.6.0",
-    "bootstrap": "^3.3.7",
-    "d3": "^4.4.0",
-    "express": "^4.14.0"
+    "angular": "1.6.0",
+    "angular-route": "1.6.0",
+    "bootstrap": "3.3.7",
+    "d3": "4.4.0",
+    "express": "4.14.0",
+    "grunt": "1.0.1",
+    "grunt-cli": "1.2.0"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0"
   }
-
 }
