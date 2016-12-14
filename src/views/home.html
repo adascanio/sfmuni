@@ -1,3 +1,13 @@
-<section>
-    <sf-muni-map></sf-muni-map>
+<section class="row">
+    <section class="map-container col-sm-8">
+        <sf-muni-map></sf-muni-map>
+    </section>
+    <aside class="col-sm-4">
+        <ul>
+            <li ng-repeat="route in routes track by $index" ng-click="onSelectRoute(route)">
+                {{route}}
+            </li>
+        </ul>
+    </aside>
+    
 </section>

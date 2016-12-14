@@ -2,11 +2,17 @@
 angular.module('NextBusService', []).factory('NextBusFactory', ['$http', function($http) {
 
     function getRoutes() {
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni');
+        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni')
+                .then(function(res){
+                    return toJson(res.data);
+                })
     };
 
     function getRouteConfig(routeId) {
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=' + routeId);
+        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=' + routeId)
+            .then(function(res){
+                return toJson(res.data);
+            });
     };
 
     function getStopPrediction (stopId) {
@@ -15,18 +21,16 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', functio
 
     function getVehicleLocations(routeId) {
         return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&t=1144953500233&routeId=' + routeId);
-        
     }
 
+    function toJson(data){
+        var x2js = new X2JS(); 
+        return x2js.xml2js(data);
+    }
 
     return {
-        get : function() {
-            return $http.get('/api/cards');
-        },
-
-         getOne : function(id) {
-            return $http.get('/api/cards/' + id);
-        }
-    }       
+        getRoutes : getRoutes,
+        getRouteConfig : getRouteConfig
+    }
 
 }]);

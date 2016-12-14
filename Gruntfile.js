@@ -22,6 +22,12 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
+            cwd: 'node_modules/x2js',
+            src: 'x2js.js',
+            dest: 'public/js/lib/x2js'
+          },
+          {
+            expand: true,
             cwd: 'node_modules/angular',
             src: 'angular.js',
             dest: 'public/js/lib/angular'
