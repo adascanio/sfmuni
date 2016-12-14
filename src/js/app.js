@@ -1,0 +1,9 @@
+angular.module('sfmuniApp', 
+['ngRoute',
+ 'appRoutes',
+ 'sfmuniAppCtrl',
+ 'NextBusService',
+ 'MapCtrl',
+ 'HomeCtrl',
+ 'SFmuniMap'
+ ]);

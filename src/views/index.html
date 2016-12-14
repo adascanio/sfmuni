@@ -1,0 +1,57 @@
+<!-- public/index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <base href="/">
+
+    <title>RealTime SF Transportation information</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/common.css">
+    <!-- custom styles -->
+
+</head>
+
+<body ng-app="sfmuniApp" ng-controller="sfmuniAppController">
+    <div class="container">
+
+        <!-- HEADER
+        <nav class="navbar navbar-inverse">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Sprint Sim - Demo</a>
+            </div>
+
+        </nav> -->
+
+        <!-- ANGULAR DYNAMIC CONTENT -->
+        <div ng-view></div>
+
+        <!-- JS -->
+        <script src="static/js/lib/angular/angular.js"></script>
+        <script src="static/js/lib/angular-route/angular-route.js"></script>
+
+        <script src="static/js/lib/d3/d3.js"></script>
+
+        <!-- ANGULAR CONTROLLERS -->
+        <script src="static/js/controllers/mapController.js"></script>
+        <script src="static/js/controllers/homeController.js"></script>
+        <script src="static/js/controllers/appController.js"></script>
+        
+        <!-- ANGULAR SERVICES -->
+        <script src="static/js/services/nextbusService.js"></script>
+        <script src="static/js/services/sfmapService.js"></script>
+        
+        <!-- ANGULAR DIRECTIVES -->
+        <script src="static/js/directives/sfmunimap/sfmunimap.js"></script>
+        
+        <script src="static/js/appRoutes.js"></script>
+        <script src="static/js/app.js"></script>
+
+    </div>
+</body>
+
+</html>
