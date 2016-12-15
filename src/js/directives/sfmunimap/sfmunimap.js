@@ -4,7 +4,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
     restrict: 'E',
     transclude: true,
     template: '<svg id="sf-map" class="geomap"></svg>',
-    link : function (scope, element, attrs) {
+    link : function (scope, element, attrs, controller) {
         console.log(scope.loadSuccess);
 
         var svg = d3.select( "#sf-map" )
@@ -24,7 +24,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
         //Check that all the information are loaded before drawing the maps 
         scope.$watch('loadSuccess', function(newValue, oldValue){
 
-            if (newValue) {
+           if (newValue) {
                 //Map first
                 drawPath({
                     selector : '.neighborhood',
@@ -60,19 +60,36 @@ angular.module('SFmuniMap', ['MapCtrl'])
             
         });
 
-        scope.$watch('selectedRoutes', function (newValue, oldValue) {
+        scope.$watch('selectedRoute', function (newValue, oldValue) {
            
-            console.log(newValue);
-            /*if (newValue === oldValue) {
-                //4. Freeways
+          if (newValue) {
+              console.log("add route " + newValue);
+              
                 drawPath({
                     selector : '.route',
-                    classNames : ['route'],
+                    classNames : ['route','route-'+newValue],
                     attrs : { stroke :'blue', fill : "none" },
-                    data : scope.freeways.features
+                    data :  scope.selectedRoutes[newValue]
                 });
-            }*/
+          }
+          else if (oldValue) {
+              d3.selectAll("path.route-"+oldValue).remove();
+              console.log("remove route " + oldValue);
+          }
+         
         })
+
+        /*scope.$watch('pollVehicles', function (newValue, oldValue) {
+         console.log("polling Vehicles for s");
+         
+            drawPath({  
+                    selector : '.vehicle',
+                    classNames : ['vehicle', 'vehicle-route-'+scope.selectedRoute],
+                    attrs : { stroke :'red', fill : "red" },
+                    data : scope.vehicles[scope.selectedRoute] || []
+                });
+         
+        });*/
 
         /**
          * @param {Object} options

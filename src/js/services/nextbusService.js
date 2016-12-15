@@ -1,6 +1,7 @@
 
 angular.module('NextBusService', []).factory('NextBusFactory', ['$http', function($http) {
 
+    
     function getRoutes() {
         return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni')
                 .then(function(res){
@@ -19,10 +20,25 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', functio
         return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&stopId=' + stopId);
     }
 
-    function getVehicleLocations(routeId) {
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&t=1144953500233&routeId=' + routeId);
+    function getVehicleLocations(params) {
+        var t = params.t;
+        var r = params.r;
+        if (t == null) {
+            t = new Date().getTime() - 15000;
+        }
+
+        var routeParam = '';
+        if (r) {
+            routeParam += '&r=' + r;
+        }
+        
+        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&t='+ t + routeParam)
+                        .then(function(res){
+                            return toJson(res.data);
+                        })
     }
 
+    
     function toJson(data){
         var x2js = new X2JS(); 
         return x2js.xml2js(data);
@@ -30,7 +46,8 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', functio
 
     return {
         getRoutes : getRoutes,
-        getRouteConfig : getRouteConfig
+        getRouteConfig : getRouteConfig,
+        getVehicleLocations :getVehicleLocations
     }
 
 }]);
