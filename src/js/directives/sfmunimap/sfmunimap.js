@@ -1,25 +1,60 @@
 angular.module('SFmuniMap', ['MapCtrl'])
 .directive('sfMuniMap', function() {
+  
+  
+                   
+  
   return {
     restrict: 'E',
     transclude: true,
     template: '<svg id="sf-map" class="geomap"></svg>',
     link : function (scope, element, attrs, controller) {
-        console.log(scope.loadSuccess);
-
+        
         var svg = d3.select( "#sf-map" )
+        svg.append("g")
         
-        
-        
-        /*svg.append("g")
-        .call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
-        
-        function zoom () {
-            d3.event
-            //svg.selectAll("g").attr("transform", "scale(" + d3.event.transform.k + ")");
-        }*/
         var width = svg.style("width").replace(/px/g,'')
         var height = svg.style("height").replace(/px/g,'')
+
+        var mapConfig = {
+            scale : 300000,
+            rotate : [122.431,0],
+            center :[0, 37.760],
+            translate : [width/2,height/2]
+        }
+        
+        
+        // Drag Event Handling
+        var drag = d3.drag();
+        function started() {
+            var elm = d3.select(this).classed("dragging", true);
+
+             var x = d3.event.x;
+             var y = d3.event.y;
+             console.log(x +' ' +y)
+
+            d3.event.on("drag", dragged).on("end", ended);
+
+            function dragged(d) {
+                console.log( d3.event.x +' '+ (d3.event.y))
+                elm.attr("transform", "translate(" + [d3.event.x - x, d3.event.y - y] + ")");
+            }
+
+            function ended() {
+                elm.classed("dragging", false);
+            }
+        }
+
+        var rootGroup = svg.select("g");
+        
+        rootGroup.call(drag.on("start", started));
+        
+        // Zooming Event 
+        function zoom () {
+           svg.select("g").attr("transform", "scale(" + d3.event.transform.k + ")");
+        }
+        rootGroup.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
+        
         
         //Check that all the information are loaded before drawing the maps 
         scope.$watch('loadSuccess', function(newValue, oldValue){
@@ -68,6 +103,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 });
         }
 
+        //TODO create api in controller
         scope.$watch('selectedRoute', function (newValue, oldValue) {
            
           if (newValue) {
@@ -88,7 +124,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 });
           }
 
-          //hide route and remove all vehicles
+          //remove all routes and vehicles
           else if (oldValue) {
               //d3.selectAll("path.route-"+oldValue).hide();
               d3.selectAll(".route-group-"+oldValue).remove();
@@ -124,13 +160,18 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
         
 
-        function afterPollVehicle (data, routeId) {
+        /**
+         * Callback after polling vehicles
+         */
+        function afterPollVehicle (data, routeId, color) {
                 if (data && data.length > 0) {
+
+
                             drawPoint({  
                             selector : '.vehicle',
                             attrs : { 
-                                fill : "red",
-                                stroke :"red",
+                                fill : color,
+                                stroke : color,
                                 class : function (d) {
                                     return ['vehicle','vehicle-route-'+routeId, 'route-group-' + routeId, 'vehicle-id-' + d.properties.id].join(' ')
                                 }
@@ -145,51 +186,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
         scope.addPollVehiclesSubscriber(afterPollVehicle);
         
-        /*function testdraw() {
-            drawPath({  
-                        selector : '.vehicle',
-                        classNames : ['vehicle', 'vehicle-route-L'],
-                        attrs : { 
-                            fill : function (d) {
-                                return d.properties.color;
-                            },
-                            stroke :function (d) {
-                                return d.properties.color;
-                            },
-                            class : function (d) {
-                                return ['vehicle','vehicle-route-' + d.properties.routeTag, 'vehicle-id-' + d.properties.id].join(' ')  
-                            }
-                        },
-                        data : [{"type":"Feature","properties":{"id":"1494","speedKmHr":"1","routeTag":"L", color: "green"},"geometry":{"type":"Point","coordinates":["-122.431","37.76"]}}]
-                });
-            setTimeout(function (){
-                drawPath({  
-                        selector : '.vehicle',
-                        classNames : ['vehicle', 'vehicle-route-L'],
-                        attrs : { 
-                            fill : function (d) {
-                                return d.properties.color;
-                            },
-                            stroke :function (d) {
-                                return d.properties.color;
-                            },
-                            class : function (d) {
-                                return ['vehicle','vehicle-route-' + d.properties.routeTag, 'vehicle-id-' + d.properties.id].join(' ') 
-                            }
-                        },
-                        data : [
-                                {"type":"Feature","properties":{"id":"1494","speedKmHr":"1","routeTag":"L" ,color: "green"},"geometry":{"type":"Point","coordinates":["-122.441","37.73"]}},
-                                 {"type":"Feature","properties":{"id":"1495","speedKmHr":"1","routeTag":"L" ,color: "blue"},"geometry":{"type":"Point","coordinates":["-122.443","37.73"]}}
-                            ]
-                });
-
-            }, 2000);
-            console.log("TEST DRAW");
-                
-        };*/
-       
-        
- /**
+        /**
          * @param {Object} options
          * <pre>
          * {
@@ -206,13 +203,13 @@ angular.module('SFmuniMap', ['MapCtrl'])
          */
         function drawPoint (options) {
                
-                var svgmap = svg
+                var svgmap = svg.select("g");
                 
                 var albersProjection = d3.geoAlbers()
-                    .scale(300000)
-                    .rotate( [122.431,0] )
-                    .center( [0, 37.760] )
-                    .translate( [width/2,height/2] );
+                    .scale(mapConfig.scale)
+                    .rotate( mapConfig.rotate )
+                    .center( mapConfig.center )
+                    .translate( mapConfig.translate );
 
                 var geoPath = d3.geoPath()
                     .projection( albersProjection );
@@ -248,13 +245,15 @@ angular.module('SFmuniMap', ['MapCtrl'])
          */
         function drawPath (options) {
                
-                var svgmap = svg.append("g").attr("class", options.groupClasses)
+                var svgmap = svg.select("g")
+                                .append("g")
+                                .attr("class", options.groupClasses)
                 
                 var albersProjection = d3.geoAlbers()
-                    .scale(300000)
-                    .rotate( [122.431,0] )
-                    .center( [0, 37.760] )
-                    .translate( [width/2,height/2] );
+                    .scale(mapConfig.scale)
+                    .rotate( mapConfig.rotate )
+                    .center( mapConfig.center )
+                    .translate( mapConfig.translate );
 
                 var geoPath = d3.geoPath()
                     .projection( albersProjection );

@@ -22,6 +22,12 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
+            cwd: 'node_modules/jquery/dist',
+            src: 'jquery.js',
+            dest: 'public/js/lib/jquery'
+          },
+          {
+            expand: true,
             cwd: 'node_modules/x2js',
             src: 'x2js.js',
             dest: 'public/js/lib/x2js'

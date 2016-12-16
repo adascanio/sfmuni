@@ -1,25 +1,34 @@
 path.neighborhood {
-    fill: #ccc;
+    fill: #dedede;
+     -webkit-filter: drop-shadow( -1px -1px 1px #000 );
+            filter: drop-shadow( -1px -1px 1px #000 );
 }
 
 path.street {
     stroke : white;
+    opacity: 0.5;
 }
 path.artery {
-    stroke : orange; 
+    stroke : orange;
+    opacity: 0.5;
 }
 path.freeway {
     stroke: green;
+    opacity: 0.5;
+    
 }
 path.empty-path {
     fill : none;
 }
 
-path.map-feature {
-    opacity: 0.5;
+path.route {
+    -webkit-filter: drop-shadow( -1px -1px 1px #000 );
+            filter: drop-shadow( -1px -1px 1px #000 );
 }
 
-path.route {
-    -webkit-filter: drop-shadow( -5px -5px 5px #000 );
-            filter: drop-shadow( -5px -5px 5px #000 );
+svg.geomap {
+    width : 100%;
+    height: 100vh;
+    background-color: rgba(137, 182, 255, 0.8);
+    
 }
