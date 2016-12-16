@@ -1,0 +1,25 @@
+path.neighborhood {
+    fill: #ccc;
+}
+
+path.street {
+    stroke : white;
+}
+path.artery {
+    stroke : orange; 
+}
+path.freeway {
+    stroke: green;
+}
+path.empty-path {
+    fill : none;
+}
+
+path.map-feature {
+    opacity: 0.5;
+}
+
+path.route {
+    -webkit-filter: drop-shadow( -5px -5px 5px #000 );
+            filter: drop-shadow( -5px -5px 5px #000 );
+}

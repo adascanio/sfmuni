@@ -35,9 +35,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 drawPath({
                     selector : '.neighborhood',
                     attrs : { 
-                        stroke :'#fff', 
-                        fill : "#ccc",
-                        class : 'neighborhood'
+                        class : 'neighborhood map-feature'
                     },
                     data : scope.neighborhoods.features
                 });
@@ -46,9 +44,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 drawPath({
                     selector : '.street',
                     attrs : { 
-                        stroke :'#fff', 
-                        fill : "none" ,
-                        classNames : 'street'
+                        class : 'street empty-path map-feature'
                     },
                     data : scope.streets.features
                 });
@@ -56,11 +52,8 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 //3. Arteries
                 drawPath({
                     selector : '.artery',
-                    classNames : ['artery'],
                     attrs : { 
-                        stroke :'orange',
-                        fill : "none",
-                        class : 'artery', 
+                        class : 'artery empty-path map-feature', 
                     },
                     data : scope.arteries.features
                 });
@@ -68,11 +61,8 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 //4. Freeways
                 drawPath({
                     selector : '.freeway',
-                    
                     attrs : { 
-                        stroke :'green', 
-                        fill : "none",
-                        classNames : 'freeway'
+                        class : 'freeway empty-path map-feature'
                      },
                     data : scope.freeways.features
                 });
