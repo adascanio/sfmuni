@@ -80,6 +80,10 @@ angular.module('HomeCtrl', ['NextBusService','MapCtrl','SFMapService']).controll
 
    function convertToPointFeature(vehicles) {
        
+       if (!angular.isArray(vehicles)) {
+           vehicles = vehicles? [vehicles] : [];     
+       }
+       
        var features = [];
        angular.forEach(vehicles, function(vehicle) {
            var v =  {
@@ -101,20 +105,29 @@ angular.module('HomeCtrl', ['NextBusService','MapCtrl','SFMapService']).controll
       return features;
    }
 
-   //TODO see if it can be done with an API from here
-   
-  function pollVeichels(fn, scope) {
+  $scope.pollVehiclesSubscribers = [];
+
+  $scope.addPollVehiclesSubscriber = function(fn) {
+        $scope.pollVehiclesSubscribers.push(fn);
+  }
+  
+
+  function pollVeichels() {
             $scope.pollVehicles = !$scope.pollVehicles;
             
             angular.forEach($scope.selectedRoutes, function(value, routeId){
                
                 NextBusFactory.getVehicleLocations({r : routeId})
                     .then(function(data){
-                    $scope.vehicles[routeId] = convertToPointFeature(data.body.vehicle);
                     
-                    console.log($scope.vehicles[routeId])
 
-                    console.log(JSON.stringify($scope.vehicles[routeId]))
+                    angular.forEach($scope.pollVehiclesSubscribers, function(fn){
+                        fn(convertToPointFeature(data.body.vehicle), routeId);
+                    });
+                    
+                    console.log(data.body.vehicle);
+                    console.log(routeId)
+                    /*console.log(JSON.stringify($scope.vehicles[routeId]))*/
                 })
 
             });
