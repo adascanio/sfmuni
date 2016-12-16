@@ -51,7 +51,6 @@ angular.module('HomeCtrl', ['NextBusService','MapCtrl','SFMapService']).controll
        }
        
    }
-   
 
    function convertToPathFeature(config) {
        
@@ -114,6 +113,8 @@ angular.module('HomeCtrl', ['NextBusService','MapCtrl','SFMapService']).controll
                     $scope.vehicles[routeId] = convertToPointFeature(data.body.vehicle);
                     
                     console.log($scope.vehicles[routeId])
+
+                    console.log(JSON.stringify($scope.vehicles[routeId]))
                 })
 
             });
