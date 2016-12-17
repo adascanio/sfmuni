@@ -1,9 +1,14 @@
 
-angular.module('NextBusService', []).factory('NextBusFactory', ['$http', '$cacheFactory', '$q', function($http, $cacheFactory, $q) {
+angular.module('NextBusService', [])
+.factory('NextBusFactory', ['$http', '$cacheFactory', '$q', '$location', function($http, $cacheFactory, $q, $location) {
 
     var cache = $cacheFactory('map-cache');
 
     cache.put('routes-config', {});
+
+    var protocol = $location.protocol();
+
+    var url =  protocol + "://webservices.nextbus.com/service/publicXMLFeed?";
 
     function getRoutes() {
 
@@ -15,7 +20,7 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', '$cache
             });
         }
 
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni')
+        return $http.get(url + 'command=routeList&a=sf-muni')
                 .then(function(res){
                     var jsonRoutes = toJson(res.data);
                     cache.put('routes', jsonRoutes);
@@ -32,7 +37,7 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', '$cache
                 resolve(routesConfigCache[routeId]);
             });
         }
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=' + routeId)
+        return $http.get(url + 'command=routeConfig&a=sf-muni&r=' + routeId)
             .then(function(res){
                 var routeConfig = toJson(res.data);
                 routesConfigCache[routeId] = routeConfig;
@@ -40,10 +45,6 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', '$cache
                 return routeConfig;
             });
     };
-
-    function getStopPrediction (stopId) {
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=predictions&a=sf-muni&stopId=' + stopId);
-    }
 
     function getVehicleLocations(params) {
         var t = params.t;
@@ -57,7 +58,7 @@ angular.module('NextBusService', []).factory('NextBusFactory', ['$http', '$cache
             routeParam += '&r=' + r;
         }
         
-        return $http.get('http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&t='+ t + routeParam)
+        return $http.get(url + 'command=vehicleLocations&a=sf-muni&t='+ t + routeParam)
                         .then(function(res){
                             return toJson(res.data);
                         })

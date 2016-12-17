@@ -118,11 +118,12 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 drawPath({
                     selector : '.route',
                     attrs : { 
-                        fill : "none",
-                        stroke : function (d) {
+                        'fill' : "none",
+                        'stroke' : function (d) {
                             return "#" + d.properties.color;
                         },
-                        class : ['route','route-'+routeId, 'route-group-' + routeId].join(' ')
+                        'stroke-width' : 2,
+                        'class' : ['route','route-'+routeId, 'route-group-' + routeId].join(' ')
                     },
                     groupClasses :  ['route-group-' + routeId].join(' '),
                     
@@ -155,7 +156,6 @@ angular.module('SFmuniMap', ['MapCtrl'])
         function afterPollVehicle (data, routeId, color) {
                 if (data && data.length > 0) {
 
-
                             drawPoint({  
                             selector : '.vehicle',
                             attrs : { 
@@ -184,7 +184,6 @@ angular.module('SFmuniMap', ['MapCtrl'])
          *   center, 
          *   scale,
          *   translate,
-         *   classNames,
          *   selector,
          *   attrs,   {Array} list of attributes to be added
          * }
@@ -208,8 +207,12 @@ angular.module('SFmuniMap', ['MapCtrl'])
                     .attr( "d", geoPath )
                     .enter()
                     .append( "path" )
-                    .attr( "d", geoPath );
-                
+                    .attr( "d", geoPath )
+                    .on("click", function(d,i){
+                        console.log(d);
+                    })
+                    
+                    
                 angular.forEach(options.attrs, function(value, key) {
                    elms.attr(key,value);
                 });
@@ -226,7 +229,6 @@ angular.module('SFmuniMap', ['MapCtrl'])
          *   center, 
          *   scale,
          *   translate,
-         *   classNames,
          *   selector,
          *   attrs,   {Array} list of attributes to be added
          * }

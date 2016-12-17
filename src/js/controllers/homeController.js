@@ -16,8 +16,8 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
         $scope.routesListVisible = false;
 
         $scope.mapConfig = { scale : 500000,
-            rotate : [122.431,0],
-            center :[0, 37.805]
+            rotate : [122.436,0],
+            center :[0, 37.796]
         }
 
         /**
