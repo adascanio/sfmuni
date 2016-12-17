@@ -3,10 +3,17 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
 
         $scope.pollVehiclesSubscribers = [];
 
+        $scope.toggleRoutesSubscribers = [];
+
         $scope.loadSuccess = false;
 
         $scope.selectedRoutes = {};
         $scope.vehicles = {};
+
+        /** list of routes available */
+        $scope.routes = [];
+
+        $scope.routesListVisible = false;
 
         $scope.mapConfig = { scale : 500000,
             rotate : [122.431,0],
@@ -18,10 +25,25 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
          */
         $scope.addPollVehiclesSubscriber = function (fn) {
             $scope.pollVehiclesSubscribers.push(fn);
-        }
+        };
 
         /**
-         * Load load Map data
+         * API register for toggle routes
+         */
+        $scope.addToggleRoutesSubscribers = function (fn) {
+            $scope.toggleRoutesSubscribers.push(fn);
+        };
+
+        /**
+         * Toggle routesList panel
+         */
+        $scope.toggleRoutesList = function() {
+            $scope.routesListVisible = !$scope.routesListVisible;
+            console.log($scope.routesListVisible)
+        };
+
+        /**
+         * Load Map data
          */
         function loadMapData(type) {
             console.log("Loading " + type);
@@ -63,12 +85,22 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
             });
         }
 
+        /**
+         * Toggle the selected flag to route object
+         */
+        function toggleSelectedRoute(routeId, isSelected) {
 
+            var found = $scope.routes.find(function(item){
 
-        
+                           return  item._tag == routeId;
+                        });
+            
+            found._selected = isSelected
+            
+        };
 
         /**
-         * API method toggle the activation of routes which might be displayed
+         * API method toggle the activation of routes which should be displayed
          * @param {Object} data
          * <pre>
          *   {String} _tag - the route tag
@@ -77,27 +109,35 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
          */
         $scope.toggleRoute = function (data) {
             var routeId = data._tag;
-
             
             if ($scope.selectedRoutes[routeId]) {
                 delete $scope.selectedRoutes[routeId];
-                $scope.command = "remove";
-                $scope.selectedRoute = null;
+                angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
+                    fn(routeId, false);
+                })
+                toggleSelectedRoute(routeId, false);
                 
             }
             else {
 
-                $scope.selectedRoutes[routeId] = { _title: data._title };
+                //$scope.selectedRoutes[routeId] = { _title: data._title };
                 NextBusFactory.getRouteConfig(routeId).then(function (data) {
                     $scope.selectedRoutes[routeId] = convertToPathFeature(data.body.route);
 
-                    $scope.selectedRoute = routeId;
+                    angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
+                        fn(routeId, true);
+                    })
+                    toggleSelectedRoute(routeId, true);
 
                 })
 
             }
 
-        }
+        };
+
+        $scope.onRouteToggle = function (fn, data, show) {
+            fn(data, show);
+        };
 
         //TODO doc
         function convertToPathFeature(config) {

@@ -3,19 +3,16 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    uglify: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-      },
-      build: {
-        src: ['src/js/controllers/*.js'],
-        dest: 'public/js/controllers.js'
-      }
-    },
     clean : {
       build : {
         src : ['public']
       }
+    },
+    concat : {
+      build: {
+        src: ['src/css/*.css'],
+        dest: 'public/css/build.css'
+      },
     },
     copy: {
       build: {
@@ -59,7 +56,7 @@ module.exports = function (grunt) {
           { 
             expand: true, 
             cwd: 'src/', 
-            src: ['**'], 
+            src: ['**', '!css/*.css'],
             dest: 'public/' 
           }
         ]
@@ -68,7 +65,7 @@ module.exports = function (grunt) {
     watch : {
       scripts: {
         files: ['src/**'],
-        tasks: ['clean:build', 'copy:build'],
+        tasks: ['clean:build','copy:build', 'concat:build'],
         options: {
           spawn: false,
         }
@@ -77,13 +74,12 @@ module.exports = function (grunt) {
   });
 
   // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
-
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  
   // Default task(s).
-  grunt.registerTask('build', ['clean:build','copy:build']);
+  grunt.registerTask('build', ['clean:build','copy:build', 'concat:build']);
 
 };

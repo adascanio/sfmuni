@@ -113,12 +113,8 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 });
         }
 
-        //TODO create api in controller
-        scope.$watch('selectedRoute', function (newValue, oldValue) {
-           
-          if (newValue) {
-              console.log("add route " + newValue);
-              
+        function drawRoute(routeId) {
+                console.log("add route " + routeId);
                 drawPath({
                     selector : '.route',
                     attrs : { 
@@ -126,49 +122,32 @@ angular.module('SFmuniMap', ['MapCtrl'])
                         stroke : function (d) {
                             return "#" + d.properties.color;
                         },
-                        class : ['route','route-'+newValue, 'route-group-' + newValue].join(' ')
+                        class : ['route','route-'+routeId, 'route-group-' + routeId].join(' ')
                     },
-                    groupClasses :  ['route-group-' + newValue].join(' '),
+                    groupClasses :  ['route-group-' + routeId].join(' '),
                     
-                    data :  scope.selectedRoutes[newValue]
+                    data :  scope.selectedRoutes[routeId]
                 });
-          }
+        }
 
-          //remove all routes and vehicles
-          else if (oldValue) {
-              //d3.selectAll("path.route-"+oldValue).hide();
-              d3.selectAll(".route-group-"+oldValue).remove();
-              //d3.selectAll("path.vehicle-"+oldValue).remove();
-              console.log("remove route " + oldValue);
-          }
-         
-        })
+        function removeRoute(routeId) {
 
-        /*scope.$watch('pollVehicles', function (newValue, oldValue) {
-         console.log("polling Vehicles for s");
-         
+              d3.selectAll(".route-group-"+routeId).remove();
+              
+              console.log("remove route " + routeId);
+        }
 
-            angular.forEach(scope.vehicles, function (data, routeId){
-                
-                if (data && data.length > 0) {
-                        drawPoint({  
-                        selector : '.vehicle',
-                        attrs : { 
-                            fill : "red",
-                            stroke :"red",
-                            class : function (d) {
-                                return ['vehicle','vehicle-route-'+routeId, 'vehicle-id-' + d.properties.id].join(' ')
-                            }
-                        },
-                        data : scope.vehicles[routeId] || []
-                    });
-                }
-                
-            });
-         
-        });*/
+        function toggleRoute (routeId, show) {
+            if (show) {
+                drawRoute(routeId);
+            }
+            else {
+                removeRoute (routeId);
+            }
+        }
 
-        
+        //Add callback after a route has been toggled
+        scope.addToggleRoutesSubscribers(toggleRoute);
 
         /**
          * Callback after polling vehicles

@@ -1,12 +1,19 @@
+
 <section>
+    <div ng-include src="'/static/views/navbar.html'"></div>
     <section class="map-container">
         <sf-muni-map></sf-muni-map>
     </section>
-   <!--<aside class="control-panel">
-        <ul>
-            <li ng-repeat="route in routes track by $index" ng-click>
-                {{route}}
-            </li>
-        </ul>
-    </aside>-->
+    <aside class="routes-list-container" ng-class="{'visible' : routesListVisible}">
+       <ul class="routes-list list-group">
+           <li 
+           class="route-item route-{{route._tag}} list-group-item"
+           ng-class="{ 'selected' : route._selected }" 
+           ng-repeat="route in routes"
+           ng-click=toggleRoute(route)>
+               {{route._title}}
+           </li>
+       </ul>
+    </aside>
+  
 </section>
