@@ -8,6 +8,11 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
         $scope.selectedRoutes = {};
         $scope.vehicles = {};
 
+        $scope.mapConfig = { scale : 500000,
+            rotate : [122.431,0],
+            center :[0, 37.805]
+        }
+
         /**
          * API register for after polling event
          */

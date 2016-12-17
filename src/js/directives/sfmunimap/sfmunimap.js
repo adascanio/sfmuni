@@ -16,27 +16,38 @@ angular.module('SFmuniMap', ['MapCtrl'])
         var width = svg.style("width").replace(/px/g,'')
         var height = svg.style("height").replace(/px/g,'')
 
-        var mapConfig = {
-            scale : 500000,
-            rotate : [122.431,0],
-            center :[0, 37.805],
-            translate : [width/2,height/2]
-        }
+        
+        var mapConfig = scope.mapConfig;
+        mapConfig.translate = [width/2,height/2];
         
         // Drag Event Handling
         var drag = d3.drag();
         function started() {
-            var elm = d3.select(this).classed("dragging", true);
+            var elm = d3.select(this).classed("dragging", true)
+            
+            var trans = elm.attr("transform");
 
-             var x = d3.event.x;
-             var y = d3.event.y;
+            //Calculate dragging point offset
+            var xx = 0,
+                yy = 0;
+            if (trans) {
+                var match = /translate\((-?\d+),(-?\d+)\)/gi.exec(trans);
+                xx = match[1] * 1;
+                yy = match[2] * 1;
+            }
+           
+            console.log(xx +' ' +yy)
+
+            //calculate offser from top left
+            var x = d3.event.x;
+            var y = d3.event.y;
              console.log(x +' ' +y)
 
             d3.event.on("drag", dragged).on("end", ended);
 
             function dragged(d) {
                 console.log( d3.event.x +' '+ (d3.event.y))
-                elm.attr("transform", "translate(" + [d3.event.x - x, d3.event.y - y] + ")");
+                elm.attr("transform", "translate(" + [d3.event.x - x + xx, d3.event.y - y + yy] + ")");
             }
 
             function ended() {
