@@ -17,12 +17,11 @@ angular.module('SFmuniMap', ['MapCtrl'])
         var height = svg.style("height").replace(/px/g,'')
 
         var mapConfig = {
-            scale : 300000,
+            scale : 500000,
             rotate : [122.431,0],
-            center :[0, 37.760],
+            center :[0, 37.805],
             translate : [width/2,height/2]
         }
-        
         
         // Drag Event Handling
         var drag = d3.drag();
@@ -53,7 +52,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
         function zoom () {
            svg.select("g").attr("transform", "scale(" + d3.event.transform.k + ")");
         }
-        rootGroup.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
+        //rootGroup.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
         
         
         //Check that all the information are loaded before drawing the maps 

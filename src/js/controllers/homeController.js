@@ -58,21 +58,9 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
             });
         }
 
-        //TODO: otpimize load map data
-        $q.all([loadMapData('neighborhoods'), loadMapData('freeways'), loadMapData('arteries'), loadMapData('streets')]).then(function () {
-            $scope.loadSuccess = true;
-            console.log("DONE");
-        });
 
-        //TODO put it in function
-        NextBusFactory.getRoutes().then(function (data) {
-            NextBusFactory.getRoutes().then(function (data) {
 
-                console.log(data.body.route)
-            });
-            console.log(data.body.route)
-            $scope.routes = data.body.route;
-        });
+        
 
         /**
          * API method toggle the activation of routes which might be displayed
@@ -172,7 +160,41 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
             setTimeout(pollVeichels, 15000)
         };
 
-        //todo put in entry point function
-        pollVeichels();
+        /**
+         * Entry point function
+         */
+        function init() {
+
+
+            //TODO: otpimize load map data
+            loadMapData('neighborhoods')
+            .then ( function () {
+                
+                return loadMapData('streets')
+            })
+            .then(function(){
+                
+                return $q.all([loadMapData('freeways'), loadMapData('arteries')])
+              
+            })
+            .then(function(){
+                    $scope.loadSuccess = true;
+                    return NextBusFactory.getRoutes();
+            })
+            //Load routes and set them in the scope
+            .then(function (data) {
+
+                $scope.toggleRoute(data.body.route[0])
+                $scope.routes = data.body.route;
+            });
+            
+            pollVeichels();
+            
+        }
+
+        //init
+        init();
+
+        
 
     });
