@@ -65,15 +65,80 @@ angular.module('NextBusService', [])
     }
 
     
+    /**
+     * Convert xml to json
+     */
     function toJson(data){
         var x2js = new X2JS(); 
         return x2js.xml2js(data);
     }
 
+    /**
+     * convert data to Geolocation features
+     */
+    function convertToPathFeature(config) {
+
+            var features = [];
+            angular.forEach(config.path, function (path) {
+                var route = {
+                    "type": "Feature",
+                    "properties": {
+                        "color": config._color,
+                        "oppositeColor": config._oppositeColor,
+                        "title": config._title
+                    },
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": []
+                    }
+                };
+                angular.forEach(path.point, function (point) {
+                    var p = [point._lon, point._lat];
+                    route.geometry.coordinates.push(p);
+                })
+
+                features.push(route);
+            });
+            return features;
+        };
+
+        /**
+         * Convert point returned by the service in Geolocation point feature
+         */
+        function convertToPointFeature(vehicles) {
+
+            if (!angular.isArray(vehicles)) {
+                vehicles = vehicles ? [vehicles] : [];
+            }
+
+            var features = [];
+            angular.forEach(vehicles, function (vehicle) {
+                var v = {
+                    "type": "Feature",
+                    "properties": {
+                        "id": vehicle._id,
+                        "speedKmHr": vehicle._speedKmHr,
+                        "routeTag": vehicle._routeTag
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [vehicle._lon, vehicle._lat]
+                    }
+                };
+
+                features.push(v);
+            });
+
+            return features;
+        }
+
     return {
         getRoutes : getRoutes,
         getRouteConfig : getRouteConfig,
-        getVehicleLocations :getVehicleLocations
+        getVehicleLocations :getVehicleLocations,
+        convertToPathFeature : convertToPathFeature,
+        convertToPointFeature : convertToPointFeature
+
     }
 
 }]);

@@ -1,5 +1,6 @@
-angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
-    .controller('HomeController', function ($scope, NextBusFactory, SFMap, $routeParams, $q) {
+angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteModule','RouteCollectionModule'])
+    .controller('HomeController', ["$scope", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection"
+    ,function ($scope, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection) {
 
         $scope.pollVehiclesSubscribers = [];
 
@@ -66,7 +67,7 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
          * fetch the vehicle locations according to the list of current selected routes
          */
         function fetchVehiclesLocation() {
-            angular.forEach($scope.selectedRoutes, function (value, routeId) {
+            angular.forEach($scope.selectedRoutes, function (routeData, routeId) {
 
                 NextBusFactory.getVehicleLocations({ r: routeId })
                     .then(function (data) {
@@ -74,7 +75,7 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
 
                         angular.forEach($scope.pollVehiclesSubscribers, function (fn) {
 
-                            fn(convertToPointFeature(data.body.vehicle), routeId);
+                            fn(NextBusFactory.convertToPointFeature(data.body.vehicle), routeId);
                         });
 
                         console.log(data.body.vehicle);
@@ -122,7 +123,17 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
 
                 //$scope.selectedRoutes[routeId] = { _title: data._title };
                 NextBusFactory.getRouteConfig(routeId).then(function (data) {
-                    $scope.selectedRoutes[routeId] = convertToPathFeature(data.body.route);
+                    var resRoute = data.body.route;
+                    var routeModel = new Route({
+                        tag : resRoute._tag,
+                        title : resRoute._title,
+                        color : "#" + resRoute._color,
+                        oppositeColor : "#" + resRoute._oppositeColor,
+                        features : NextBusFactory.convertToPathFeature(resRoute)
+                    })
+
+                    //$scope.selectedRoutes[routeId] = NextBusFactory.convertToPathFeature(data.body.route);
+                    $scope.selectedRoutes[routeId] = routeModel;
 
                     angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
                         fn(routeId, true);
@@ -138,62 +149,6 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
         $scope.onRouteToggle = function (fn, data, show) {
             fn(data, show);
         };
-
-        //TODO doc
-        function convertToPathFeature(config) {
-
-            var features = [];
-            angular.forEach(config.path, function (path) {
-                var route = {
-                    "type": "Feature",
-                    "properties": {
-                        "color": config._color,
-                        "oppositeColor": config._oppositeColor,
-                        "title": config._title
-                    },
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": []
-                    }
-                };
-                angular.forEach(path.point, function (point) {
-                    var p = [point._lon, point._lat];
-                    route.geometry.coordinates.push(p);
-                })
-
-                features.push(route);
-            });
-            return features;
-        }
-
-        //TODO doc
-        function convertToPointFeature(vehicles) {
-
-            if (!angular.isArray(vehicles)) {
-                vehicles = vehicles ? [vehicles] : [];
-            }
-
-            var features = [];
-            angular.forEach(vehicles, function (vehicle) {
-                var v = {
-                    "type": "Feature",
-                    "properties": {
-                        "id": vehicle._id,
-                        "speedKmHr": vehicle._speedKmHr,
-                        "routeTag": vehicle._routeTag
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [vehicle._lon, vehicle._lat]
-                    }
-                };
-
-                features.push(v);
-            });
-
-            return features;
-        }
-
 
         /**
          * Execute polling to fetch the vehicle locations
@@ -240,6 +195,4 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService'])
         //init
         init();
 
-        
-
-    });
+    }]);
