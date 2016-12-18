@@ -11,7 +11,7 @@ angular.module('RouteCollectionModule', [])
         return this.routes;
     }
 
-    RouteCollection.prototype.getRoute = function (routeTag) {
+    RouteCollection.prototype.get = function (routeTag) {
         return this.routes[routeTag];
     }
 
@@ -19,8 +19,8 @@ angular.module('RouteCollectionModule', [])
         this.routes[route.getTag()] = route;
     }
 
-    RouteCollection.prototype.remove = function (route){
-        delete this.routes[route.getTag()];
+    RouteCollection.prototype.remove = function (routeTag){
+        delete this.routes[routeTag];
     }
 
     return RouteCollection

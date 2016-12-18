@@ -10,8 +10,10 @@ module.exports = function (grunt) {
     },
     concat : {
       build: {
-        src: ['src/css/*.css'],
-        dest: 'public/css/build.css'
+        files : {
+          'public/css/build.css' : ['src/css/*.css'],
+          'public/js/models.js' : ['src/js/models/*.js'],
+        }
       },
     },
     copy: {

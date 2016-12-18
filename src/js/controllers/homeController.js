@@ -1,6 +1,7 @@
-angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteModule','RouteCollectionModule'])
-    .controller('HomeController', ["$scope", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection"
-    ,function ($scope, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection) {
+angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteModule','RouteCollectionModule', 'VehicleModule','VehicleCollectionModule'])
+    .controller('HomeController', 
+                ["$scope", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection"
+    ,function ($scope, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection) {
 
         $scope.pollVehiclesSubscribers = [];
 
@@ -8,9 +9,8 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteM
 
         $scope.loadSuccess = false;
 
-        $scope.selectedRoutes = {};
-        $scope.vehicles = {};
-
+        $scope.selectedRoutes = new RouteCollection ();
+        
         /** list of routes available */
         $scope.routes = [];
 
@@ -67,23 +67,43 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteM
          * fetch the vehicle locations according to the list of current selected routes
          */
         function fetchVehiclesLocation() {
-            angular.forEach($scope.selectedRoutes, function (routeData, routeId) {
+            angular.forEach($scope.selectedRoutes.getAll(), function (route, routeId) {
 
                 NextBusFactory.getVehicleLocations({ r: routeId })
                     .then(function (data) {
 
-
                         angular.forEach($scope.pollVehiclesSubscribers, function (fn) {
 
-                            fn(NextBusFactory.convertToPointFeature(data.body.vehicle), routeId);
+                            var rawVehicles = data.body.vehicle;
+
+                            var vehicles = createVehicles(rawVehicles);
+
+                            fn(vehicles, routeId, route.getColor());
                         });
 
                         console.log(data.body.vehicle);
                         console.log(routeId)
-                        /*console.log(JSON.stringify($scope.vehicles[routeId]))*/
                     })
 
             });
+        };
+
+        function createVehicles(rawVehicles) {
+            var vehicles = new VehicleCollection();
+            angular.forEach(rawVehicles,function (rawVehicle){
+                var vehicle = new Vehicle({
+                    id : rawVehicle._id,
+                    routeTag : rawVehicle._routeTag,
+                    speedKmHr : rawVehicle._speedKmHr,
+                    secsSinceReport : rawVehicle._secsSinceReport,
+                    lat : rawVehicle._lat,
+                    lon : rawVehicle._lon,
+                    feature : NextBusFactory.convertToPointFeature(rawVehicle)
+
+                });
+                vehicles.set(vehicle);
+            });
+            return vehicles;
         }
 
         /**
@@ -111,8 +131,8 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteM
         $scope.toggleRoute = function (data) {
             var routeId = data._tag;
             
-            if ($scope.selectedRoutes[routeId]) {
-                delete $scope.selectedRoutes[routeId];
+            if ($scope.selectedRoutes.get(routeId)) {
+                $scope.selectedRoutes.remove(routeId)
                 angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
                     fn(routeId, false);
                 })
@@ -133,7 +153,7 @@ angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteM
                     })
 
                     //$scope.selectedRoutes[routeId] = NextBusFactory.convertToPathFeature(data.body.route);
-                    $scope.selectedRoutes[routeId] = routeModel;
+                    $scope.selectedRoutes.set(routeModel);
 
                     angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
                         fn(routeId, true);

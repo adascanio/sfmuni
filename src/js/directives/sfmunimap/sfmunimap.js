@@ -154,7 +154,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                         },
                         groupClasses: ['route-group-' + routeId].join(' '),
 
-                        data: scope.selectedRoutes[routeId].getFeatures()
+                        data: scope.selectedRoutes.get(routeId).getFeatures()
                     });
                 }
 
@@ -181,22 +181,26 @@ angular.module('SFmuniMap', ['MapCtrl'])
                  * Callback after polling vehicles
                  */
                 function afterPollVehicle(data, routeId, color) {
-                    if (data && data.length > 0) {
 
-                        drawPoint({
-                            selector: '.vehicle',
-                            attrs: {
-                                fill: color,
-                                stroke: color,
-                                class: function (d) {
-                                    return ['vehicle', 'vehicle-route-' + routeId, 'route-group-' + routeId, 'vehicle-id-' + d.properties.id].join(' ')
-                                }
-                            },
-                            groupClasses: function (d) {
-                                return ['vehicle-route-' + routeId, 'route-group-' + routeId, 'vehicle-group-' + d.properties.id].join(' ')
-                            },
-                            data: data || []
+                    if (data) {
+                        angular.forEach(data.getAll(),function (vehicle) {
+                            drawPoint({
+                                selector: '.vehicle',
+                                attrs: {
+                                    fill: color,
+                                    stroke: color,
+                                    class: function (d) {
+                                        return ['vehicle', 'vehicle-route-' + routeId, 'route-group-' + routeId, 'vehicle-id-' + d.properties.id].join(' ')
+                                    }
+                                },
+                                groupClasses: function (d) {
+                                    return ['vehicle-route-' + routeId, 'route-group-' + routeId, 'vehicle-group-' + d.properties.id].join(' ')
+                                },
+                                data: vehicle.getFeature() || []
+                            });
                         });
+
+
                     }
                 };
 
@@ -254,7 +258,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                         .ease(d3.easeLinear)
                         .attr("fill", options.attrs.fill)
                         .attr("stroke", options.attrs.stroke);
-                        
+
 
                     enterElms.attr("d", geoPath)
                         .on("click", function (d, i) {
