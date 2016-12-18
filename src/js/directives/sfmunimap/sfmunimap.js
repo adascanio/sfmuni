@@ -29,12 +29,16 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
             //Calculate dragging point offset
             var xx = 0,
-                yy = 0;
-            if (trans) {
-                var match = /translate\((-?\d+),(-?\d+)\)/gi.exec(trans);
-                xx = match[1] * 1;
-                yy = match[2] * 1;
+                yy = 0,
+                ss = 0;
+
+            var matchTrans = trans? /translate\((-?\d+),(-?\d+)\)/gi.exec(trans) : null;
+            if (matchTrans) {
+                
+                xx = matchTrans[1] * 1;
+                yy = matchTrans[2] * 1;
             }
+            
            
             console.log(xx +' ' +yy)
 
@@ -47,7 +51,9 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
             function dragged(d) {
                 console.log( d3.event.x +' '+ (d3.event.y))
-                elm.attr("transform", "translate(" + [d3.event.x - x + xx, d3.event.y - y + yy] + ")");
+                var strTrans = elm.attr("transform");
+                strTrans = strTrans.replace(/translate\(.*\)/g, "translate(" + [d3.event.x - x + xx, d3.event.y - y + yy] + ")")
+                elm.attr("transform", strTrans);
             }
 
             function ended() {
@@ -60,9 +66,10 @@ angular.module('SFmuniMap', ['MapCtrl'])
         rootGroup.call(drag.on("start", started));
         
         // Zooming Event 
-        function zoom () {
-           svg.select("g").attr("transform", "scale(" + d3.event.transform.k + ")");
+        function zoom (scale) {
+           svg.select("g").attr("transform", "scale(" +scale+ ")translate(0,0)");
         }
+        
         //rootGroup.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
         
         
@@ -174,6 +181,8 @@ angular.module('SFmuniMap', ['MapCtrl'])
         };
 
         scope.addPollVehiclesSubscriber(afterPollVehicle);
+
+        
         
         /**
          * @param {Object} options
@@ -190,6 +199,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
          * </pre>
          */
         function drawPoint (options) {
+
                
                 var svgmap = svg.select("g");
                 
@@ -201,20 +211,38 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
                 var geoPath = d3.geoPath()
                     .projection( albersProjection );
+
+                var transitionPoint = d3.transition()
+                                        .duration(20000)
+                                        .attr( "d", geoPath )
+            
                 
-                var elms = svgmap.selectAll( "path" + options.selector )
-                    .data( options.data, function(d) { return d.properties.id; } )
-                    .attr( "d", geoPath )
-                    .enter()
-                    .append( "path" )
+                var elms = svgmap.selectAll( "path" + options.selector );
+
+                
+                elms = elms.data( options.data, function(d) { return d.properties.id; } )
+                        //.attr( "d", geoPath )
+
+                elms.transition().duration(20000).ease(d3.easeLinear).attr( "d", geoPath )
+                //elms.transition(transitionPoint)
+                
+                
+                angular.forEach(options.attrs, function(value, key) {
+                   elms = elms.attr(key,value);
+                });
+
+                var enterElms = elms.enter()
+                    
+                enterElms = enterElms.append( "path" )
                     .attr( "d", geoPath )
                     .on("click", function(d,i){
                         console.log(d);
                     })
-                    
+                
+                //enterElms.transition().duration(500).attr("color", "red");  
                     
                 angular.forEach(options.attrs, function(value, key) {
-                   elms.attr(key,value);
+                   enterElms = enterElms.attr(key,value);
                 });
                     
         };
@@ -239,6 +267,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 var svgmap = svg.select("g")
                                 .append("g")
                                 .attr("class", options.groupClasses)
+                                
                 
                 var albersProjection = d3.geoAlbers()
                     .scale(mapConfig.scale)
