@@ -1,19 +1,57 @@
-
 <section>
     <div ng-include src="'/static/views/navbar.html'"></div>
     <section class="map-container">
         <sf-muni-map></sf-muni-map>
     </section>
+
+    <!-- LIST ROUTES -->
     <aside class="routes-list-container" ng-class="{'visible' : routesListVisible}">
-       <ul class="routes-list list-group">
-           <li 
-           class="route-item route-{{route._tag}} list-group-item"
-           ng-class="{ 'selected' : route._selected }" 
-           ng-repeat="route in routes"
-           ng-click=toggleRoute(route)>
-               {{route._title}}
-           </li>
-       </ul>
+        <ul class="routes-list list-group">
+            <li ng-repeat="(key, route) in routes.getAll()" class="route-item route-{{key}} list-group-item" ng-class="{ 'selected' : route.getSelected() }"
+                ng-click=toggleRoute(route)>
+                {{route.getTitle()}}
+            </li>
+        </ul>
     </aside>
-  
+
+    <!-- VEHICLE INFO 
+     <section id="vehicle-info" class="info-panel" ng-class="{'visible' : infoPanelId != null}">
+         <div class="info-container">
+             <div>
+                 <div class="tag-route"
+                 style="background-color: {{routes.get(shownVehicle.routeTag).getColor()}};color: {{routes.get(shownVehicle.routeTag).getOppositeColor()}};">{{shownVehicle.routeTag}}</div>
+             </div>
+             <div class="speed">
+                 speed: <strong>{{shownVehicle.speedKmHr}}</strong> km/h
+             </div>
+             <div class="vehicle id">{{shownVehicle.id}}</div>
+
+         </div>
+     </section>-->
+
+    <div id="vehicle-info" class="panel panel-default info-panel" ng-class="{'visible' : infoPanelId != null}">
+        <div class="panel-heading">
+            <div class="vehicle-id">
+                Vehicle Info ({{shownVehicle.id}})
+                <button type="button" class="btn btn-default pull-right" ng-click="infoPanelId = null"> X </button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="tag-route" style="background-color: {{routes.get(shownVehicle.routeTag).getColor()}};color: {{routes.get(shownVehicle.routeTag).getOppositeColor()}};">{{shownVehicle.routeTag}}</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="speed">
+                        <div>
+                            speed: 
+                        </div>
+                        <strong>{{shownVehicle.speedKmHr}}</strong> km/h
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
 </section>

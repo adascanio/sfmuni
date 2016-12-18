@@ -7,7 +7,8 @@ angular.module('SFmuniMap', ['MapCtrl'])
         return {
             restrict: 'E',
             transclude: true,
-            template: '<svg id="sf-map" class="geomap"></svg>',
+            //template: '<svg id="sf-map" class="geomap"></svg>',
+            templateUrl: 'static/js/directives/sfmunimap/sfmunimap.html',
             link: function (scope, element, attrs, controller) {
 
                 var svg = d3.select("#sf-map")
@@ -89,6 +90,8 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 function zoom(scale) {
                     svg.select("g").attr("transform", "scale(" + scale + ")translate(0,0)");
                 }
+
+                zoom(2);
 
                 //rootGroup.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
 
@@ -183,7 +186,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 function afterPollVehicle(data, routeId, color) {
 
                     if (data) {
-                        angular.forEach(data.getAll(),function (vehicle) {
+                        angular.forEach(data.getAll(),function (vehicle, id) {
                             drawPoint({
                                 selector: '.vehicle',
                                 attrs: {
@@ -262,6 +265,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
                     enterElms.attr("d", geoPath)
                         .on("click", function (d, i) {
+                            scope.$emit('vehicle:clicked', d);
                             console.log(d);
                         })
                     enterElms = enterElms.attr("fill", "transparent")

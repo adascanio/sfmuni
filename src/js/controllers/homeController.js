@@ -1,218 +1,251 @@
-angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteModule','RouteCollectionModule', 'VehicleModule','VehicleCollectionModule'])
-    .controller('HomeController', 
-                ["$scope", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection"
-    ,function ($scope, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection) {
+angular.module('HomeCtrl', ['NextBusService', 'MapCtrl', 'SFMapService', 'RouteModule', 'RouteCollectionModule', 'VehicleModule', 'VehicleCollectionModule'])
+    .controller('HomeController',
+    ["$scope", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection"
+        , function($scope, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection) {
 
-        $scope.pollVehiclesSubscribers = [];
+            $scope.pollVehiclesSubscribers = [];
 
-        $scope.toggleRoutesSubscribers = [];
+            $scope.toggleRoutesSubscribers = [];
 
-        $scope.loadSuccess = false;
+            $scope.loadSuccess = false;
 
-        $scope.selectedRoutes = new RouteCollection ();
-        
-        /** list of routes available */
-        $scope.routes = [];
+            $scope.selectedRoutes = new RouteCollection();
 
-        $scope.routesListVisible = false;
+            /** list of available routes */
+            $scope.routes = new RouteCollection();
 
-        $scope.mapConfig = { scale : 500000,
-            rotate : [122.436,0],
-            center :[0, 37.796]
-        }
+            $scope.routesListVisible = false;
 
-        /**
-         * API register for after polling event
-         */
-        $scope.addPollVehiclesSubscriber = function (fn) {
-            $scope.pollVehiclesSubscribers.push(fn);
-        };
-
-        /**
-         * API register for toggle routes
-         */
-        $scope.addToggleRoutesSubscribers = function (fn) {
-            $scope.toggleRoutesSubscribers.push(fn);
-        };
-
-        /**
-         * Toggle routesList panel
-         */
-        $scope.toggleRoutesList = function() {
-            $scope.routesListVisible = !$scope.routesListVisible;
-            console.log($scope.routesListVisible)
-        };
-
-        /**
-         * Load Map data
-         */
-        function loadMapData(type) {
-            console.log("Loading " + type);
-            if ($scope[type]) {
-                console.log("From cache");
-                return;
+            $scope.mapConfig = {
+                scale: 500000,
+                rotate: [122.436, 0],
+                center: [0, 37.796]
             }
-            return SFMap.get(type)()
-                .then(function (res) {
-                    console.log("Setting " + type);
-                    $scope[type] = res.data;
 
-                }, function (res) {
-                    console.log("Impossible to load " + type);
+            /**
+             * API register for after polling event
+             */
+            $scope.addPollVehiclesSubscriber = function(fn) {
+                $scope.pollVehiclesSubscribers.push(fn);
+            };
+
+            /**
+             * API register for toggle routes
+             */
+            $scope.addToggleRoutesSubscribers = function(fn) {
+                $scope.toggleRoutesSubscribers.push(fn);
+            };
+
+            /**
+             * Toggle routesList panel
+             */
+            $scope.toggleRoutesList = function() {
+                $scope.routesListVisible = !$scope.routesListVisible;
+                console.log($scope.routesListVisible)
+            };
+
+            /**
+             * Load Map data
+             */
+            function loadMapData(type) {
+                console.log("Loading " + type);
+                if ($scope[type]) {
+                    console.log("From cache");
+                    return;
+                }
+                return SFMap.get(type)()
+                    .then(function(res) {
+                        console.log("Setting " + type);
+                        $scope[type] = res.data;
+
+                    }, function(res) {
+                        console.log("Impossible to load " + type);
+
+                    });
+            }
+
+            /**
+             * fetch the vehicle locations according to the list of current selected routes
+             */
+            function fetchVehiclesLocation() {
+                angular.forEach($scope.selectedRoutes.getAll(), function(route, routeId) {
+
+                    NextBusFactory.getVehicleLocations({ r: routeId })
+                        .then(function(data) {
+
+                            angular.forEach($scope.pollVehiclesSubscribers, function(fn) {
+
+                                var rawVehicles = data.body.vehicle;
+
+                                var vehicles = createVehicles(rawVehicles);
+
+                                fn(vehicles, routeId, route.getColor());
+                            });
+
+                            console.log(data.body.vehicle);
+                            console.log(routeId)
+                        })
 
                 });
-        }
+            };
 
-        /**
-         * fetch the vehicle locations according to the list of current selected routes
-         */
-        function fetchVehiclesLocation() {
-            angular.forEach($scope.selectedRoutes.getAll(), function (route, routeId) {
+            function createVehicles(rawVehicles) {
+                var vehicles = new VehicleCollection();
+                angular.forEach(rawVehicles, function(rawVehicle) {
+                    var vehicle = new Vehicle({
+                        id: rawVehicle._id,
+                        routeTag: rawVehicle._routeTag,
+                        speedKmHr: rawVehicle._speedKmHr,
+                        secsSinceReport: rawVehicle._secsSinceReport,
+                        lat: rawVehicle._lat,
+                        lon: rawVehicle._lon,
+                        feature: NextBusFactory.convertToPointFeature(rawVehicle)
 
-                NextBusFactory.getVehicleLocations({ r: routeId })
-                    .then(function (data) {
-
-                        angular.forEach($scope.pollVehiclesSubscribers, function (fn) {
-
-                            var rawVehicles = data.body.vehicle;
-
-                            var vehicles = createVehicles(rawVehicles);
-
-                            fn(vehicles, routeId, route.getColor());
-                        });
-
-                        console.log(data.body.vehicle);
-                        console.log(routeId)
-                    })
-
-            });
-        };
-
-        function createVehicles(rawVehicles) {
-            var vehicles = new VehicleCollection();
-            angular.forEach(rawVehicles,function (rawVehicle){
-                var vehicle = new Vehicle({
-                    id : rawVehicle._id,
-                    routeTag : rawVehicle._routeTag,
-                    speedKmHr : rawVehicle._speedKmHr,
-                    secsSinceReport : rawVehicle._secsSinceReport,
-                    lat : rawVehicle._lat,
-                    lon : rawVehicle._lon,
-                    feature : NextBusFactory.convertToPointFeature(rawVehicle)
-
+                    });
+                    vehicles.set(vehicle);
                 });
-                vehicles.set(vehicle);
-            });
-            return vehicles;
-        }
-
-        /**
-         * Toggle the selected flag to route object
-         */
-        function toggleSelectedRoute(routeId, isSelected) {
-
-            var found = $scope.routes.find(function(item){
-
-                           return  item._tag == routeId;
-                        });
-            
-            found._selected = isSelected
-            
-        };
-
-        /**
-         * API method toggle the activation of routes which should be displayed
-         * @param {Object} data
-         * <pre>
-         *   {String} _tag - the route tag
-         *   {String} _title - the route title 
-         * </pre>
-         */
-        $scope.toggleRoute = function (data) {
-            var routeId = data._tag;
-            
-            if ($scope.selectedRoutes.get(routeId)) {
-                $scope.selectedRoutes.remove(routeId)
-                angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
-                    fn(routeId, false);
-                })
-                toggleSelectedRoute(routeId, false);
-                
+                return vehicles;
             }
-            else {
 
-                //$scope.selectedRoutes[routeId] = { _title: data._title };
-                NextBusFactory.getRouteConfig(routeId).then(function (data) {
-                    var resRoute = data.body.route;
-                    var routeModel = new Route({
-                        tag : resRoute._tag,
-                        title : resRoute._title,
-                        color : "#" + resRoute._color,
-                        oppositeColor : "#" + resRoute._oppositeColor,
-                        features : NextBusFactory.convertToPathFeature(resRoute)
-                    })
+            /**
+             * Toggle the selected flag to route object
+             */
+            function toggleSelectedRoute(route, isSelected) {
 
-                    //$scope.selectedRoutes[routeId] = NextBusFactory.convertToPathFeature(data.body.route);
-                    $scope.selectedRoutes.set(routeModel);
+                var newRoute = $scope.routes.get(route.getTag())
 
+                newRoute.setColor(route.getColor())
+                newRoute.setOppositeColor(route.getOppositeColor())
+                newRoute.setSelected(isSelected);
+
+                $scope.routes.set(newRoute)
+
+
+                /* var found = $scope.routes.find(function(item) {
+ 
+                     return item._tag == routeId;
+                 });*/
+
+                //found._selected = isSelected
+
+            };
+
+            /**
+             * API method toggle the activation of routes which should be displayed
+             * @param {Route} route the route to be toggled
+             */
+            $scope.toggleRoute = function(route) {
+                var routeTag = route.getTag();;
+
+                if ($scope.selectedRoutes.get(routeTag)) {
+                    $scope.selectedRoutes.remove(routeTag)
                     angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
-                        fn(routeId, true);
+                        fn(routeTag, false);
                     })
-                    toggleSelectedRoute(routeId, true);
+                    toggleSelectedRoute(route, false);
 
+                }
+                else {
+
+                    //$scope.selectedRoutes[routeId] = { _title: data._title };
+                    NextBusFactory.getRouteConfig(routeTag).then(function(data) {
+                        var resRoute = data.body.route;
+                        var routeModel = new Route({
+                            tag: resRoute._tag,
+                            title: resRoute._title,
+                            color: "#" + resRoute._color,
+                            oppositeColor: "#" + resRoute._oppositeColor,
+                            features: NextBusFactory.convertToPathFeature(resRoute)
+                        })
+
+                        //$scope.selectedRoutes[routeId] = NextBusFactory.convertToPathFeature(data.body.route);
+                        $scope.selectedRoutes.set(routeModel);
+
+                        angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
+                            fn(routeTag, true);
+                        })
+                        toggleSelectedRoute(routeModel, true);
+
+                    })
+
+                }
+
+            };
+
+            $scope.onRouteToggle = function(fn, data, show) {
+                fn(data, show);
+            };
+
+            /**
+             * Execute polling to fetch the vehicle locations
+             */
+            function pollVeichels() {
+
+                fetchVehiclesLocation()
+
+                setTimeout(pollVeichels, 15000)
+            };
+
+            /**
+             * Entry point function
+             */
+            function init() {
+
+
+                //TODO: otpimize load map data
+                loadMapData('neighborhoods')
+                    .then(function() {
+
+                        return loadMapData('streets')
+                    })
+                    .then(function() {
+
+                        return $q.all([loadMapData('freeways'), loadMapData('arteries')])
+
+                    })
+                    .then(function() {
+                        $scope.loadSuccess = true;
+                        return NextBusFactory.getRoutes();
+                    })
+                    //Load routes and set them in the scope
+                    .then(function(data) {
+
+                        var rawRoutes = data.body.route;
+
+
+                        angular.forEach(rawRoutes, function(rawRoute, index) {
+
+                            var routeModel = new Route({
+                                tag: rawRoute._tag,
+                                title: rawRoute._title
+                            });
+                            $scope.routes.set(routeModel);
+
+                            if (index === 0) {
+                                $scope.toggleRoute(routeModel)
+                            }
+                        });
+
+                    });
+
+                pollVeichels();
+
+                $scope.$on("vehicle:clicked", function(event, mass) {
+                    $scope.infoPanelId = mass.properties.id;
+                    $scope.shownVehicle = new Vehicle({
+                        id : mass.properties.id,
+                        routeTag : mass.properties.routeTag,
+                        speedKmHr : mass.properties.speedKmHr,
+                    });
+                    console.log("on event " + event + ": "+ mass);
+                    console.log(event)
+                    console.log(mass)
+                    console.log($scope.infoPanelId)
                 })
 
             }
 
-        };
+            //init
+            init();
 
-        $scope.onRouteToggle = function (fn, data, show) {
-            fn(data, show);
-        };
-
-        /**
-         * Execute polling to fetch the vehicle locations
-         */
-        function pollVeichels() {
-
-            fetchVehiclesLocation()
-
-            setTimeout(pollVeichels, 15000)
-        };
-
-        /**
-         * Entry point function
-         */
-        function init() {
-
-
-            //TODO: otpimize load map data
-            loadMapData('neighborhoods')
-            .then ( function () {
-                
-                return loadMapData('streets')
-            })
-            .then(function(){
-                
-                return $q.all([loadMapData('freeways'), loadMapData('arteries')])
-              
-            })
-            .then(function(){
-                    $scope.loadSuccess = true;
-                    return NextBusFactory.getRoutes();
-            })
-            //Load routes and set them in the scope
-            .then(function (data) {
-
-                $scope.toggleRoute(data.body.route[0])
-                $scope.routes = data.body.route;
-            });
-            
-            pollVeichels();
-            
-        }
-
-        //init
-        init();
-
-    }]);
+        }]);
