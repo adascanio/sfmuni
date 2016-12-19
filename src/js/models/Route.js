@@ -8,6 +8,8 @@ angular.module('RouteModule', []).factory('Route', [function (props) {
         this.oppositeColor = props.oppositeColor || "#00f";
         this.features = props.features || [];
         this.selected = props.selected || false;
+        this.rank = props.rank;
+        this.waiting = props.waiting;
     }
 
     Route.prototype.getTag = function () {
@@ -40,6 +42,18 @@ angular.module('RouteModule', []).factory('Route', [function (props) {
 
     Route.prototype.setSelected = function (selected) {
         this.selected = selected;
+    }
+
+    Route.prototype.setRank = function (rank) {
+        this.rank = rank;
+    }
+
+    Route.prototype.setWaiting = function (waiting) {
+        this.waiting = waiting;
+    }
+
+    Route.prototype.getWaiting = function () {
+        return this.waiting;
     }
 
     Route.prototype.getFeatures = function () {

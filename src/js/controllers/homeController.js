@@ -14,6 +14,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
             /** list of available routes */
             $scope.routes = new RouteCollection();
 
+            //open it by default when @see loadSuccess becomes true
             $scope.routesListVisible = false;
 
             $scope.mapConfig = {
@@ -73,9 +74,9 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
              * fetch the vehicle locations according to the list of current selected routes
              */
             function fetchVehiclesLocation() {
-                angular.forEach($scope.selectedRoutes.getAll(), function (route, routeId) {
+                angular.forEach($scope.selectedRoutes.getAll(), function (route, routeTag) {
 
-                    NextBusFactory.getVehicleLocations({ r: routeId })
+                    NextBusFactory.getVehicleLocations({ r: routeTag })
                         .then(function (data) {
 
                             angular.forEach($scope.pollVehiclesSubscribers, function (fn) {
@@ -84,11 +85,13 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
 
                                 var vehicles = createVehicles(rawVehicles);
 
-                                fn(vehicles, routeId, route.getColor());
+                                $scope.routes.get(routeTag).setWaiting(false);
+
+                                fn(vehicles, routeTag, route.getColor());
                             });
 
                             console.log(data);
-                            console.log(routeId)
+                            console.log(routeTag)
                         }
                         ,rejectHandler)
 
@@ -122,12 +125,13 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
              */
             function toggleSelectedRoute(route, isSelected) {
 
-                var newRoute = $scope.routes.get(route.getTag())
+                var newRoute = $scope.routes.get(route.getTag());
 
                 newRoute.setColor(route.getColor())
                 newRoute.setOppositeColor(route.getOppositeColor())
                 newRoute.setSelected(isSelected);
-
+                newRoute.setWaiting(isSelected);
+                
                 $scope.routes.set(newRoute)
 
             };
@@ -210,6 +214,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                     })
                     .then(function () {
                         $scope.loadSuccess = true;
+                        $scope.routesListVisible = true;
                         return NextBusFactory.getRoutes();
                     })
                     //Load routes and set them in the scope
@@ -222,7 +227,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
 
                             var routeModel = new Route({
                                 tag: rawRoute._tag,
-                                title: rawRoute._title
+                                title: rawRoute._title,
+                                rank : index
                             });
                             $scope.routes.set(routeModel);
 

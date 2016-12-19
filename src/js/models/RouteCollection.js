@@ -12,6 +12,15 @@ angular.module('RouteCollectionModule', [])
             return this.routes;
         }
 
+        RouteCollection.prototype.getAllAsArray = function () {
+            var that = this;
+            var res = Object.keys(this.routes)
+                    .map(function (key, index, array) {
+                        return that.routes[key];
+                    });
+            return res;
+        }
+
         RouteCollection.prototype.get = function (routeTag) {
             return this.routes[routeTag];
         }
