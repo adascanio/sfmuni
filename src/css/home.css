@@ -3,7 +3,7 @@
     top: 50px;
     right: -300px;
     width: 300px;
-    height: 100vw;
+    height: 100vh;
 
     -webkit-transition: right 300ms cubic-bezier(0.730, 0.420, 0.280, 1); /* older webkit */
     -webkit-transition: right 300ms cubic-bezier(0.730, 0.420, 0.280, 1.005); 

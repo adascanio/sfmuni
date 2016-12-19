@@ -1,13 +1,13 @@
 
-angular.module('RouteModule', []).factory('Route', [function(props) {
+angular.module('RouteModule', []).factory('Route', [function (props) {
 
-    function Route (props) {
+    function Route(props) {
         this.tag = props.tag || "??";
-         this.title = props.title || "Unknown route";
-         this.color = props.color || "#f00";
-         this.oppositeColor = props.oppositeColor || "#00f";
-         this.features = props.features || [];
-         this.selected = props.selected || false;
+        this.title = props.title || "Unknown route";
+        this.color = props.color || "#f00";
+        this.oppositeColor = props.oppositeColor || "#00f";
+        this.features = props.features || [];
+        this.selected = props.selected || false;
     }
 
     Route.prototype.getTag = function () {

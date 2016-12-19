@@ -30,6 +30,7 @@ svg.geomap {
     width : 100%;
     height: 100vh;
     position: relative;
+    overflow: hidden;
 }
 
 .geomap-container.loaded > .wait-overlay {

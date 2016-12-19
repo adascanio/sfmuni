@@ -14,44 +14,4 @@
         </ul>
     </aside>
 
-    <!-- VEHICLE INFO 
-     <section id="vehicle-info" class="info-panel" ng-class="{'visible' : infoPanelId != null}">
-         <div class="info-container">
-             <div>
-                 <div class="tag-route"
-                 style="background-color: {{routes.get(shownVehicle.routeTag).getColor()}};color: {{routes.get(shownVehicle.routeTag).getOppositeColor()}};">{{shownVehicle.routeTag}}</div>
-             </div>
-             <div class="speed">
-                 speed: <strong>{{shownVehicle.speedKmHr}}</strong> km/h
-             </div>
-             <div class="vehicle id">{{shownVehicle.id}}</div>
-
-         </div>
-     </section>-->
-
-    <div id="vehicle-info" class="panel panel-default info-panel" ng-class="{'visible' : infoPanelId != null}">
-        <div class="panel-heading">
-            <div class="vehicle-id">
-                Vehicle Info ({{shownVehicle.id}})
-                <button type="button" class="btn btn-default pull-right" ng-click="infoPanelId = null"> X </button>
-            </div>
-        </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="tag-route" style="background-color: {{routes.get(shownVehicle.routeTag).getColor()}};color: {{routes.get(shownVehicle.routeTag).getOppositeColor()}};">{{shownVehicle.routeTag}}</div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="speed">
-                        <div>
-                            speed: 
-                        </div>
-                        <strong>{{shownVehicle.speedKmHr}}</strong> km/h
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-    </div>
-
 </section>

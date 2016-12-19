@@ -1,29 +1,29 @@
 
 angular.module('VehicleCollectionModule', [])
-.factory('VehicleCollection',[function() {
+    .factory('VehicleCollection', [function () {
 
-    function VehicleCollection (vehicles){
+        function VehicleCollection(vehicles) {
 
-        this.vehicles = vehicles || {};
-    }
+            this.vehicles = vehicles || {};
+        }
 
-    VehicleCollection.prototype.getAll = function () {
-        return this.vehicles;
-    }
+        VehicleCollection.prototype.getAll = function () {
+            return this.vehicles;
+        }
 
-    VehicleCollection.prototype.get = function (id) {
-        return this.vehicles[id];
-    }
+        VehicleCollection.prototype.get = function (id) {
+            return this.vehicles[id];
+        }
 
-    VehicleCollection.prototype.set = function (vehicle){
-        this.vehicles[vehicle.getId()] = vehicle;
-    }
+        VehicleCollection.prototype.set = function (vehicle) {
+            this.vehicles[vehicle.getId()] = vehicle;
+        }
 
-    VehicleCollection.prototype.remove = function (id){
-        delete this.vehicles[id];
-    }
+        VehicleCollection.prototype.remove = function (id) {
+            delete this.vehicles[id];
+        }
 
 
-    return VehicleCollection
+        return VehicleCollection
 
-}]);
+    }]);

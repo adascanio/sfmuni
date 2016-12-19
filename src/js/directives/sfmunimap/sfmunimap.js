@@ -1,13 +1,9 @@
-angular.module('SFmuniMap', ['MapCtrl'])
+angular.module('SFmuniMap', [])
     .directive('sfMuniMap', function () {
-
-
-
 
         return {
             restrict: 'E',
             transclude: true,
-            //template: '<svg id="sf-map" class="geomap"></svg>',
             templateUrl: 'static/js/directives/sfmunimap/sfmunimap.html',
             link: function (scope, element, attrs, controller) {
 
@@ -22,7 +18,6 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 mapConfig.translate = [width / 2, height / 2];
 
                 // Drag Event Handling
-
                 function getTransformProperties(elm) {
                     var transform = elm.attr("transform") || "";
                     var matchTranslate = transform ? /translate\((-?\d+),(-?\d+)\)/gi.exec(transform) : null;
@@ -85,15 +80,6 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 var rootGroup = svg.select("g");
 
                 rootGroup.call(drag.on("start", started));
-
-                // Zooming Event 
-                function zoom(scale) {
-                    svg.select("g").attr("transform", "scale(" + scale + ")translate(0,0)");
-                }
-
-                zoom(2);
-
-                //rootGroup.call(d3.zoom().scaleExtent([1, 8]).on("zoom", zoom))
 
 
                 //Check that all the information are loaded before drawing the maps 
@@ -186,7 +172,7 @@ angular.module('SFmuniMap', ['MapCtrl'])
                 function afterPollVehicle(data, routeId, color) {
 
                     if (data) {
-                        angular.forEach(data.getAll(),function (vehicle, id) {
+                        angular.forEach(data.getAll(), function (vehicle, id) {
                             drawPoint({
                                 selector: '.vehicle',
                                 attrs: {
@@ -264,10 +250,54 @@ angular.module('SFmuniMap', ['MapCtrl'])
 
 
                     enterElms.attr("d", geoPath)
-                        .on("click", function (d, i) {
-                            scope.$emit('vehicle:clicked', d);
-                            console.log(d);
+                        
+                        .on("mouseover", function (d, i, elm) {
+                            var w = 230, h = 50, yText = 130, yRect = 95, xRect = 95;
+                            svg.append("rect")
+                                .attr("id", "text-" + d.properties.id)
+                                .attr("class", "vehicle-info")
+                                .attr("y", yRect)
+                                .attr("rx", 4)
+                                .attr("ry", 4)
+                                .attr("x", xRect)
+                                .attr("width", w)
+                                .attr("height", h)
+                                .attr("fill", "#fff")
+                                .attr("stroke", function () {
+                                    return elm[0].getAttribute("fill");
+                                })
+                                .attr("stroke-width", 3);
+
+                            svg.append("text")
+                                .attr("class", "vehicle-info")
+                                .attr("y", yText)
+                                .attr("x", 120)
+                                .attr("font-size", 30)
+                                .attr("fill", function () {
+                                    return elm[0].getAttribute("fill");
+                                })
+                                .text(d.properties.routeTag)
+
+                            svg.append("text")
+                                .attr("class", "vehicle-info")
+                                .attr("y", yText)
+                                .attr("x", 235)
+                                .attr("font-size", 30)
+                                .text(d.properties.speedKmHr)
+
+                            svg.append("text")
+                                .attr("class", "vehicle-info")
+                                .attr("y", yText)
+                                .attr("x", 270)
+                                .attr("font-size", 15)
+                                .text("Km/hr")
+
+
                         })
+                        .on("mouseout", function (d) {
+                            svg.selectAll(".vehicle-info").remove();
+                        })
+
                     enterElms = enterElms.attr("fill", "transparent")
                         .attr("stroke", "transparent")
                         .attr("class", options.attrs.class);
