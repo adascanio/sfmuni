@@ -44,6 +44,11 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 console.log($scope.routesListVisible)
             };
 
+            function rejectHandler (res) {
+                console.error("An error has occurred");
+                console.error(res);
+            }
+
             /**
              * Load Map data
              */
@@ -75,16 +80,17 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
 
                             angular.forEach($scope.pollVehiclesSubscribers, function (fn) {
 
-                                var rawVehicles = data.body.vehicle;
+                                var rawVehicles = data;
 
                                 var vehicles = createVehicles(rawVehicles);
 
                                 fn(vehicles, routeId, route.getColor());
                             });
 
-                            console.log(data.body.vehicle);
+                            console.log(data);
                             console.log(routeId)
-                        })
+                        }
+                        ,rejectHandler)
 
                 });
             };
@@ -144,7 +150,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 else {
 
                     NextBusFactory.getRouteConfig(routeTag).then(function (data) {
-                        var resRoute = data.body.route;
+                        var resRoute = data;
                         var routeModel = new Route({
                             tag: resRoute._tag,
                             title: resRoute._title,
@@ -164,7 +170,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                             pollVeichels();
                         }
 
-                    })
+                    },
+                    rejectHandler)
 
                 }
 
@@ -208,7 +215,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                     //Load routes and set them in the scope
                     .then(function (data) {
 
-                        var rawRoutes = data.body.route;
+                        var rawRoutes = data;
 
 
                         angular.forEach(rawRoutes, function (rawRoute, index) {
@@ -225,7 +232,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                         });
 
 
-                    });
+                    }
+                    , rejectHandler);
 
 
             }
