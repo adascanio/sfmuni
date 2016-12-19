@@ -4,4 +4,14 @@
         <div class="spinner"></div>
     </div>
     <svg id="sf-map" class="geomap"></svg>
+    <div class="zoom-control">
+        <div class="btn-group-vertical btn-group">
+            <button ng-click="zoomIn()" ng-disabled="zoomLevel === zoomRange[1]" class="btn btn-default" aria-label="zoom in">
+                <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+            </button>
+            <button ng-click="zoomOut()" ng-disabled="zoomLevel === zoomRange[0]" class="btn btn-default" aria-label="zoom out">
+                <span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
 </div>

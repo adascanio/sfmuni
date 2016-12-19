@@ -60,3 +60,9 @@ svg.geomap {
 path.vehicle {
     cursor : pointer;
 }
+
+.zoom-control {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+}

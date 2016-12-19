@@ -67,12 +67,13 @@ angular.module('SFmuniMap', [])
                         var translateAttr = "translate(" + [d3.event.x - x + xx, d3.event.y - y + yy] + ")";
                         var trans = props.transform;
 
-                        trans = props.matchTranslate ? trans.replace(/translate\(.*\)/g, translateAttr) : trans + translateAttr;
+                        trans = props.matchTranslate ? trans.replace(/translate\(-?[0-9]+,-?[0-9]+\)/g, translateAttr) : trans + translateAttr;
 
                         elm.attr("transform", trans);
                     }
 
                     function ended() {
+                        var props =  getTransformProperties(elm);
                         elm.classed("dragging", false);
                     }
                 }
@@ -80,6 +81,35 @@ angular.module('SFmuniMap', [])
                 var rootGroup = svg.select("g");
 
                 rootGroup.call(drag.on("start", started));
+
+                //Zoom
+                scope.zoomLevel = 1;
+                scope.zoomRange = [1,3];
+                var zoomStep = 0.5;
+
+            function zoom(sign, threshold) {
+                if (scope.zoomLevel === threshold) {
+                    return;
+                }
+                    scope.zoomLevel = scope.zoomLevel + zoomStep*sign;
+
+                    var transform  = rootGroup.attr("transform");
+                    if (transform == null) {
+                         transform = "";
+                     }
+                     var scaleStr = "scale("+scope.zoomLevel+")";
+                    transform = transform.indexOf("scale") >= 0? transform.replace(/scale\(-?[0-9]+(\.[0-9]+)?\)/g,scaleStr) : transform + scaleStr;
+                    rootGroup.attr("transform", transform);
+                    console.log("zoomed " +  scope.zoomLevel);
+            }
+
+                scope.zoomIn = function() {
+                    zoom(1,scope.zoomRange[1])
+                }
+
+                 scope.zoomOut = function() {
+                    zoom(-1,scope.zoomRange[0])
+                }
 
 
                 //Check that all the information are loaded before drawing the maps 
