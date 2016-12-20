@@ -7,7 +7,7 @@ module.exports = function (grunt) {
       {
         expand: true,
         cwd: 'node_modules/jquery/dist',
-        src: 'jquery.js',
+        src: 'jquery.min.js',
         dest: 'public/js/lib/jquery'
       },
       {
@@ -19,13 +19,13 @@ module.exports = function (grunt) {
       {
         expand: true,
         cwd: 'node_modules/angular',
-        src: 'angular.js',
+        src: 'angular.min.js',
         dest: 'public/js/lib/angular'
       },
       {
         expand: true,
         cwd: 'node_modules/angular-route',
-        src: 'angular-route.js',
+        src: 'angular-route.min.js',
         dest: 'public/js/lib/angular-route'
       },
       {
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
       {
         expand: true,
         cwd: 'node_modules/d3/build',
-        src: ['d3.js'],
+        src: ['d3.min.js'],
         dest: 'public/js/lib/d3'
       },
       //======================================
@@ -103,7 +103,9 @@ module.exports = function (grunt) {
         }
       },
       dist: {
-        'public/css/build.css': ['src/css/*.css']
+        files :{
+          'public/css/build.css': ['src/css/*.css']
+        }
       }
     },
     copy: {
