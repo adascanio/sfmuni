@@ -45,8 +45,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
             };
 
             function rejectHandler(res) {
-                console.error("An error has occurred");
-                console.error(res);
+                $error("An error has occurred");
+                $error(res);
             }
 
             /**
@@ -61,7 +61,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                         $scope[type] = res.data;
 
                     }, function(res) {
-                        console.error("Impossible to load " + type);
+                        $error("Impossible to load " + type);
+                        $error(res);
 
                     });
             }

@@ -2,22 +2,22 @@
 angular.module('SFMapService', []).factory('SFMap', ['$http', function ($http) {
 
     function getNeighborhoods() {
-        console.log("Service getNeighborhoods")
+        $log("Service getNeighborhoods")
         return $http.get('static/js/sfmaps/neighborhoods.json');
     };
 
     function getFreeways() {
-        console.log("Service getFreeways")
+        $log("Service getFreeways")
         return $http.get('static/js/sfmaps/freeways.json');
     };
 
     function getArteries() {
-        console.log("Service getArteries")
+        $log("Service getArteries")
         return $http.get('static/js/sfmaps/arteries.json');
     };
 
     function getStreets() {
-        console.log("Service getStreets")
+        $log("Service getStreets")
         return $http.get('static/js/sfmaps/streets.json');
     };
     return {
