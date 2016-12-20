@@ -1,23 +1,23 @@
 
-angular.module('SFMapService', []).factory('SFMap', ['$http', function ($http) {
+angular.module('SFMapService', []).factory('SFMap', ['$http','$log', function ($http, $log) {
 
     function getNeighborhoods() {
-        $log("Service getNeighborhoods")
+        $log.info("Service getNeighborhoods")
         return $http.get('static/js/sfmaps/neighborhoods.json');
     };
 
     function getFreeways() {
-        $log("Service getFreeways")
+        $log.info("Service getFreeways")
         return $http.get('static/js/sfmaps/freeways.json');
     };
 
     function getArteries() {
-        $log("Service getArteries")
+        $log.info("Service getArteries")
         return $http.get('static/js/sfmaps/arteries.json');
     };
 
     function getStreets() {
-        $log("Service getStreets")
+        $log.info("Service getStreets")
         return $http.get('static/js/sfmaps/streets.json');
     };
     return {

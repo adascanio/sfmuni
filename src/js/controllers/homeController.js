@@ -1,7 +1,7 @@
 angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'RouteCollectionModule', 'VehicleModule', 'VehicleCollectionModule'])
     .controller('HomeController',
-    ["$scope", "$timeout", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection"
-        , function($scope, $timeout, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection) {
+    ["$scope", "$timeout", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection", "$log"
+        , function($scope, $timeout, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection, $log) {
 
             $scope.pollVehiclesSubscribers = [];
 
@@ -45,8 +45,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
             };
 
             function rejectHandler(res) {
-                $error("An error has occurred");
-                $error(res);
+                $log.error("An error has occurred");
+                $log.error(res);
             }
 
             /**
@@ -61,8 +61,8 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                         $scope[type] = res.data;
 
                     }, function(res) {
-                        $error("Impossible to load " + type);
-                        $error(res);
+                        $log.error("Impossible to load " + type);
+                        $log.error(res);
 
                     });
             }

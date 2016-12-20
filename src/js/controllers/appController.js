@@ -1,5 +1,5 @@
-angular.module('sfmuniAppCtrl', []).controller('sfmuniAppController', ["$scope", function ($scope) {
+angular.module('sfmuniAppCtrl', []).controller('sfmuniAppController', ["$scope", "$log", function($scope, $log) {
 
-    $log('App controller started');
+    $log.info('App controller started');
 
 }]);
