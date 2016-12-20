@@ -338,7 +338,7 @@ angular.module('SFmuniMap', [])
 
                         })
                         .on("mouseout", function(d) {
-                            //svg.selectAll(".vehicle-info-container").remove();
+                            svg.selectAll(".vehicle-info-container").remove();
                         })
 
                     enterElms = enterElms.attr("fill", "transparent")
