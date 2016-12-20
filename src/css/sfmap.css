@@ -1,16 +1,22 @@
-path.neighborhood {
+path.neighborhoods {
     fill: #dedede;
 }
 
-path.street {
+path.streets {
     stroke : white;
     opacity: 0.5;
 }
-path.artery {
+
+svg[data-zoom="1"] path.streets,
+svg[data-zoom="1.5"] path.streets {
+    display: none;
+}
+
+path.arteries {
     stroke : orange;
     opacity: 0.5;
 }
-path.freeway {
+path.freeways {
     stroke: green;
     opacity: 0.5;
     

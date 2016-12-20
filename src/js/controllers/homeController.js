@@ -1,7 +1,7 @@
 angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'RouteCollectionModule', 'VehicleModule', 'VehicleCollectionModule'])
     .controller('HomeController',
     ["$scope", "$timeout", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection"
-        , function ($scope, $timeout, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection) {
+        , function($scope, $timeout, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection) {
 
             $scope.pollVehiclesSubscribers = [];
 
@@ -26,26 +26,25 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
             /**
              * API register for after polling event
              */
-            $scope.addPollVehiclesSubscriber = function (fn) {
+            $scope.addPollVehiclesSubscriber = function(fn) {
                 $scope.pollVehiclesSubscribers.push(fn);
             };
 
             /**
              * API register for toggle routes
              */
-            $scope.addToggleRoutesSubscribers = function (fn) {
+            $scope.addToggleRoutesSubscribers = function(fn) {
                 $scope.toggleRoutesSubscribers.push(fn);
             };
 
             /**
              * Toggle routesList panel
              */
-            $scope.toggleRoutesList = function () {
+            $scope.toggleRoutesList = function() {
                 $scope.routesListVisible = !$scope.routesListVisible;
-                console.log($scope.routesListVisible)
             };
 
-            function rejectHandler (res) {
+            function rejectHandler(res) {
                 console.error("An error has occurred");
                 console.error(res);
             }
@@ -60,11 +59,11 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                     return;
                 }
                 return SFMap.get(type)()
-                    .then(function (res) {
+                    .then(function(res) {
                         console.log("Setting " + type);
                         $scope[type] = res.data;
 
-                    }, function (res) {
+                    }, function(res) {
                         console.log("Impossible to load " + type);
 
                     });
@@ -74,12 +73,12 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
              * fetch the vehicle locations according to the list of current selected routes
              */
             function fetchVehiclesLocation() {
-                angular.forEach($scope.selectedRoutes.getAll(), function (route, routeTag) {
+                angular.forEach($scope.selectedRoutes.getAll(), function(route, routeTag) {
 
                     NextBusFactory.getVehicleLocations({ r: routeTag })
-                        .then(function (data) {
+                        .then(function(data) {
 
-                            angular.forEach($scope.pollVehiclesSubscribers, function (fn) {
+                            angular.forEach($scope.pollVehiclesSubscribers, function(fn) {
 
                                 var rawVehicles = data;
 
@@ -93,7 +92,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                             console.log(data);
                             console.log(routeTag)
                         }
-                        ,rejectHandler)
+                        , rejectHandler)
 
                 });
             };
@@ -104,7 +103,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 if (!angular.isArray(vehicles)) {
                     rawVehicles = rawVehicles ? [rawVehicles] : [];
                 }
-                angular.forEach(rawVehicles, function (rawVehicle) {
+                angular.forEach(rawVehicles, function(rawVehicle) {
                     var vehicle = new Vehicle({
                         id: rawVehicle._id,
                         routeTag: rawVehicle._routeTag,
@@ -131,7 +130,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 newRoute.setOppositeColor(route.getOppositeColor())
                 newRoute.setSelected(isSelected);
                 newRoute.setWaiting(isSelected);
-                
+
                 $scope.routes.set(newRoute)
 
             };
@@ -140,12 +139,12 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
              * API method toggle the activation of routes which should be displayed
              * @param {Route} route the route to be toggled
              */
-            $scope.toggleRoute = function (route, poll) {
+            $scope.toggleRoute = function(route, poll) {
                 var routeTag = route.getTag();;
 
                 if ($scope.selectedRoutes.get(routeTag)) {
                     $scope.selectedRoutes.remove(routeTag)
-                    angular.forEach($scope.toggleRoutesSubscribers, function (fn) {
+                    angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
                         fn(routeTag, false);
                     })
                     toggleSelectedRoute(route, false);
@@ -153,7 +152,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 }
                 else {
 
-                    NextBusFactory.getRouteConfig(routeTag).then(function (data) {
+                    NextBusFactory.getRouteConfig(routeTag).then(function(data) {
                         var resRoute = data;
                         var routeModel = new Route({
                             tag: resRoute._tag,
@@ -165,7 +164,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
 
                         $scope.selectedRoutes.set(routeModel);
 
-                        angular.forEach($scope.toggleRoutesSubscribers, function (fn) {
+                        angular.forEach($scope.toggleRoutesSubscribers, function(fn) {
                             fn(routeTag, true);
                         })
                         toggleSelectedRoute(routeModel, true);
@@ -175,13 +174,13 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                         }
 
                     },
-                    rejectHandler)
+                        rejectHandler)
 
                 }
 
             };
 
-            $scope.onRouteToggle = function (fn, data, show) {
+            $scope.onRouteToggle = function(fn, data, show) {
                 fn(data, show);
             };
 
@@ -200,45 +199,71 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
              */
             function init() {
 
+                $scope.mapLoaded = {
+                    neighborhoods: false,
+                    streets: false,
+                    arteries: false,
+                    freeways: false
+                }
 
+                $scope.mapTypes = ['neighborhoods', 'streets', 'arteries', 'freeways']
+
+                $scope.neighborhoodsLoaded = false;
+                $scope.streetsLoaded = false;
+                $scope.arteriesLoaded = false;
+                $scope.nfreewaysLoaded = false;
+
+                //$scope.mapTypes = ['neighborhoods', 'streets','freeways','arteries'];
+                /*angular.forEach($scope.mapLoaded, function(value, mapType){
+                    loadMapData(mapType).then(function(){
+                        $scope[mapType+'Loaded'] = true;
+                        if (mapType === 'neighborhoods') {
+                            
+                            //the page can be displayed
+                            $scope.loadSuccess = true;
+                        }
+                        
+                    });
+                });*/
                 //TODO: otpimize load map data
                 loadMapData('neighborhoods')
-                    .then(function () {
+                    .then(function() {
 
-                        return loadMapData('streets')
-                    })
-                    .then(function () {
-
-                        return $q.all([loadMapData('freeways'), loadMapData('arteries')])
-
-                    })
-                    .then(function () {
+                        //the page can be displayed
                         $scope.loadSuccess = true;
-                        $scope.routesListVisible = true;
-                        return NextBusFactory.getRoutes();
+                        return $q.all([loadMapData('streets'), loadMapData('arteries'), loadMapData('freeways')]);
                     })
-                    //Load routes and set them in the scope
-                    .then(function (data) {
+                    .then(function() {
 
-                        var rawRoutes = data;
+                        $scope.restOfMapLoaded = true;
+
+                    });
+
+                //Load routes and set them in the scope
+                NextBusFactory.getRoutes().then(function(data) {
+                    $scope.routesListVisible = true;
+
+                    var rawRoutes = data;
 
 
-                        angular.forEach(rawRoutes, function (rawRoute, index) {
+                    angular.forEach(rawRoutes, function(rawRoute, index) {
 
-                            var routeModel = new Route({
-                                tag: rawRoute._tag,
-                                title: rawRoute._title,
-                                rank : index
-                            });
-                            $scope.routes.set(routeModel);
-
-                            if (index === 0) {
-                                $scope.toggleRoute(routeModel, true);
-                            }
+                        var routeModel = new Route({
+                            tag: rawRoute._tag,
+                            title: rawRoute._title,
+                            rank: index
                         });
+                        $scope.routes.set(routeModel);
+
+                        if (index === 0) {
+
+                            $scope.toggleRoute(routeModel, true)
+
+                        }
+                    });
 
 
-                    }
+                }
                     , rejectHandler);
 
 

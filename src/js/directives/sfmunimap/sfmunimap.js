@@ -1,11 +1,11 @@
 angular.module('SFmuniMap', [])
-    .directive('sfMuniMap', function () {
+    .directive('sfMuniMap', function() {
 
         return {
             restrict: 'E',
             transclude: true,
             templateUrl: 'static/js/directives/sfmunimap/sfmunimap.html',
-            link: function (scope, element, attrs, controller) {
+            link: function(scope, element, attrs, controller) {
 
                 var svg = d3.select("#sf-map")
                 svg.append("g")
@@ -73,7 +73,7 @@ angular.module('SFmuniMap', [])
                     }
 
                     function ended() {
-                        var props =  getTransformProperties(elm);
+                        var props = getTransformProperties(elm);
                         elm.classed("dragging", false);
                     }
                 }
@@ -84,88 +84,97 @@ angular.module('SFmuniMap', [])
 
                 //Zoom
                 scope.zoomLevel = 1;
-                scope.zoomRange = [1,3];
+                scope.zoomRange = [1, 3];
                 var zoomStep = 0.5;
+                svg.attr("data-zoom" , scope.zoomLevel);
+                function zoom(sign, threshold) {
+                    if (scope.zoomLevel === threshold) {
+                        return;
+                    }
+                    scope.zoomLevel = scope.zoomLevel + zoomStep * sign;
 
-            function zoom(sign, threshold) {
-                if (scope.zoomLevel === threshold) {
-                    return;
-                }
-                    scope.zoomLevel = scope.zoomLevel + zoomStep*sign;
-
-                    var transform  = rootGroup.attr("transform");
+                    var transform = rootGroup.attr("transform");
                     if (transform == null) {
-                         transform = "";
-                     }
-                     var scaleStr = "scale("+scope.zoomLevel+")";
-                    transform = transform.indexOf("scale") >= 0? transform.replace(/scale\(-?[0-9]+(\.[0-9]+)?\)/g,scaleStr) : transform + scaleStr;
+                        transform = "";
+                    }
+                    var scaleStr = "scale(" + scope.zoomLevel + ")";
+                    transform = transform.indexOf("scale") >= 0 ? transform.replace(/scale\(-?[0-9]+(\.[0-9]+)?\)/g, scaleStr) : transform + scaleStr;
                     rootGroup.attr("transform", transform);
-                    console.log("zoomed " +  scope.zoomLevel);
-            }
+                    console.log("zoomed " + scope.zoomLevel);
+
+                    svg.attr("data-zoom" , scope.zoomLevel);
+
+                }
 
                 scope.zoomIn = function() {
-                    zoom(1,scope.zoomRange[1])
+                    zoom(1, scope.zoomRange[1])
                 }
 
-                 scope.zoomOut = function() {
-                    zoom(-1,scope.zoomRange[0])
+                scope.zoomOut = function() {
+                    zoom(-1, scope.zoomRange[0])
                 }
 
+                scope.$watch('loadSuccess', function(newValue, oldValue) {
+                    if (newValue) {
+                        drawPath({
+                            selector: '.neighborhoods',
+                            attrs: {
+                                class: 'neighborhoods map-feature'
+                            },
+                            data: scope.neighborhoods.features
+                        });
+                    }
+                });
 
-                //Check that all the information are loaded before drawing the maps 
-                scope.$watch('loadSuccess', function (newValue, oldValue) {
+                scope.$watch('restOfMapLoaded', function(newValue, oldValue) {
 
                     if (newValue) {
                         printMap();
                     }
-
+ 
                 });
 
-                function printMap() {
-                    //Map first
-                    drawPath({
-                        selector: '.neighborhood',
-                        attrs: {
-                            class: 'neighborhood map-feature'
-                        },
-                        data: scope.neighborhoods.features
-                    });
 
+                function printMap() {
+                    //1. Map loades already
                     //2. Streets
                     drawPath({
-                        selector: '.street',
+                        selector: '.streets',
                         attrs: {
-                            class: 'street empty-path map-feature'
+                            class: 'streets empty-path map-feature'
                         },
                         data: scope.streets.features
                     });
 
                     //3. Arteries
                     drawPath({
-                        selector: '.artery',
+                        selector: '.arteries',
                         attrs: {
-                            class: 'artery empty-path map-feature',
+                            class: 'arteries empty-path map-feature',
                         },
                         data: scope.arteries.features
                     });
 
                     //4. Freeways
                     drawPath({
-                        selector: '.freeway',
+                        selector: '.freeways',
                         attrs: {
-                            class: 'freeway empty-path map-feature'
+                            class: 'freeways empty-path map-feature'
                         },
                         data: scope.freeways.features
                     });
                 }
 
+                /**
+                 * Draw Route on svg
+                 */
                 function drawRoute(routeId) {
                     console.log("add route " + routeId);
                     drawPath({
                         selector: '.route',
                         attrs: {
                             'fill': "none",
-                            'stroke': function (d) {
+                            'stroke': function(d) {
                                 return "#" + d.properties.color;
                             },
                             'stroke-width': 2,
@@ -177,6 +186,9 @@ angular.module('SFmuniMap', [])
                     });
                 }
 
+                /**
+                 * Remove selected route
+                 */
                 function removeRoute(routeId) {
 
                     d3.selectAll(".route-group-" + routeId).remove();
@@ -202,17 +214,17 @@ angular.module('SFmuniMap', [])
                 function afterPollVehicle(data, routeId, color) {
 
                     if (data) {
-                        angular.forEach(data.getAll(), function (vehicle, id) {
+                        angular.forEach(data.getAll(), function(vehicle, id) {
                             drawPoint({
                                 selector: '.vehicle',
                                 attrs: {
                                     fill: color,
                                     stroke: color,
-                                    class: function (d) {
+                                    class: function(d) {
                                         return ['vehicle', 'vehicle-route-' + routeId, 'route-group-' + routeId, 'vehicle-id-' + d.properties.id].join(' ')
                                     }
                                 },
-                                groupClasses: function (d) {
+                                groupClasses: function(d) {
                                     return ['vehicle-route-' + routeId, 'route-group-' + routeId, 'vehicle-group-' + d.properties.id].join(' ')
                                 },
                                 data: vehicle.getFeature() || []
@@ -258,14 +270,14 @@ angular.module('SFmuniMap', [])
                     var elms = svgmap.selectAll("path" + options.selector);
 
 
-                    elms = elms.data(options.data, function (d) { return d.properties.id; })
+                    elms = elms.data(options.data, function(d) { return d.properties.id; })
 
                     elms.transition()
                         .duration(15000)
                         .ease(d3.easeLinear)
                         .attr("d", geoPath)
 
-                    angular.forEach(options.attrs, function (value, key) {
+                    angular.forEach(options.attrs, function(value, key) {
                         elms = elms.attr(key, value);
                     });
 
@@ -280,8 +292,8 @@ angular.module('SFmuniMap', [])
 
 
                     enterElms.attr("d", geoPath)
-                        
-                        .on("mouseover", function (d, i, elm) {
+
+                        .on("mouseover", function(d, i, elm) {
                             var w = 230, h = 50, yText = 130, yRect = 95, xRect = 95;
                             svg.append("rect")
                                 .attr("id", "text-" + d.properties.id)
@@ -293,7 +305,7 @@ angular.module('SFmuniMap', [])
                                 .attr("width", w)
                                 .attr("height", h)
                                 .attr("fill", "#fff")
-                                .attr("stroke", function () {
+                                .attr("stroke", function() {
                                     return elm[0].getAttribute("fill");
                                 })
                                 .attr("stroke-width", 3);
@@ -303,7 +315,7 @@ angular.module('SFmuniMap', [])
                                 .attr("y", yText)
                                 .attr("x", 120)
                                 .attr("font-size", 30)
-                                .attr("fill", function () {
+                                .attr("fill", function() {
                                     return elm[0].getAttribute("fill");
                                 })
                                 .text(d.properties.routeTag)
@@ -324,7 +336,7 @@ angular.module('SFmuniMap', [])
 
 
                         })
-                        .on("mouseout", function (d) {
+                        .on("mouseout", function(d) {
                             svg.selectAll(".vehicle-info").remove();
                         })
 
@@ -349,7 +361,7 @@ angular.module('SFmuniMap', [])
                  * }
                  * </pre>
                  */
-                function drawPath(options) {
+                function drawPath(options ) {
 
                     var svgmap = svg.select("g")
                         .append("g")
@@ -372,7 +384,7 @@ angular.module('SFmuniMap', [])
                         .append("path")
                         .attr("d", geoPath);
 
-                    angular.forEach(options.attrs, function (value, key) {
+                    angular.forEach(options.attrs, function(value, key) {
                         elms.attr(key, value);
                     });
 

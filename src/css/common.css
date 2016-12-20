@@ -25,7 +25,8 @@ list-style: none;
   height: 120px;
   -webkit-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
-  margin: 30% auto
+  margin: 15% auto;
+  
 }
 
 .loader.tiny {
