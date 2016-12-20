@@ -7,8 +7,7 @@ path.streets {
     opacity: 0.5;
 }
 
-svg[data-zoom="1"] path.streets,
-svg[data-zoom="1.5"] path.streets {
+svg[data-zoom="1"] path.streets {
     display: none;
 }
 

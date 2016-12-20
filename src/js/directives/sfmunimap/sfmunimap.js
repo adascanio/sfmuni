@@ -79,7 +79,7 @@ angular.module('SFmuniMap', [])
 
                 rootGroup.call(drag.on("start", started));
 
-                //Zoom
+                //======= Zoom
                 scope.zoomLevel = 1;
                 scope.zoomRange = [1, 3];
                 var zoomStep = 0.5;
@@ -110,7 +110,8 @@ angular.module('SFmuniMap', [])
                     zoom(-1, scope.zoomRange[0])
                 }
 
-                scope.$watch('loadSuccess', function(newValue, oldValue) {
+                //Watch map loading
+                scope.$watch('neighborhoodsLoaded', function(newValue, oldValue) {
                     if (newValue) {
                         drawPath({
                             selector: '.neighborhoods',
@@ -132,7 +133,7 @@ angular.module('SFmuniMap', [])
 
 
                 function printMap() {
-                    //1. Map loades already
+                    //1. Map loaded already
                     //2. Streets
                     drawPath({
                         selector: '.streets',

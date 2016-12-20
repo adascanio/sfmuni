@@ -7,8 +7,6 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
 
             $scope.toggleRoutesSubscribers = [];
 
-            $scope.loadSuccess = false;
-
             $scope.selectedRoutes = new RouteCollection();
 
             /** list of available routes */
@@ -205,42 +203,32 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 $scope.mapTypes = ['neighborhoods', 'streets', 'arteries', 'freeways']
 
                 $scope.neighborhoodsLoaded = false;
-                $scope.streetsLoaded = false;
-                $scope.arteriesLoaded = false;
-                $scope.nfreewaysLoaded = false;
-
-                //$scope.mapTypes = ['neighborhoods', 'streets','freeways','arteries'];
-                /*angular.forEach($scope.mapLoaded, function(value, mapType){
-                    loadMapData(mapType).then(function(){
-                        $scope[mapType+'Loaded'] = true;
-                        if (mapType === 'neighborhoods') {
-                            
-                            //the page can be displayed
-                            $scope.loadSuccess = true;
-                        }
-                        
-                    });
-                });*/
-                //TODO: otpimize load map data
+                $scope.restOfMapLoaded = false;
+                
                 loadMapData('neighborhoods')
                     .then(function() {
 
-                        //the page can be displayed
-                        $scope.loadSuccess = true;
+                        //display the neighborhoods in the background while still loading
+                        $scope.neighborhoodsLoaded = true;
                         return $q.all([loadMapData('streets'), loadMapData('arteries'), loadMapData('freeways')]);
                     })
                     .then(function() {
 
+                        //the page can be displayed
                         $scope.restOfMapLoaded = true;
 
+                        //open first route if available
+                        opneFirstRoute();
+
                     });
+
+                $scope.firstRouteAvailable = false;
 
                 //Load routes and set them in the scope
                 NextBusFactory.getRoutes().then(function(data) {
                     $scope.routesListVisible = true;
 
                     var rawRoutes = data;
-
 
                     angular.forEach(rawRoutes, function(rawRoute, index) {
 
@@ -252,9 +240,9 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                         $scope.routes.set(routeModel);
 
                         if (index === 0) {
-
-                            $scope.toggleRoute(routeModel, true)
-
+                            $scope.firstRouteAvailable = true;
+                            //open first route if available
+                            opneFirstRoute();
                         }
                     });
 
@@ -263,6 +251,12 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                     , rejectHandler);
 
 
+            }
+
+            function opneFirstRoute () {
+                if( $scope.firstRouteAvailable && $scope.restOfMapLoaded){
+                    $scope.toggleRoute($scope.routes.getAllAsArray()[0], true);
+                }
             }
 
             //init
