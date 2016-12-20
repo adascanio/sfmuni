@@ -53,18 +53,15 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
              * Load Map data
              */
             function loadMapData(type) {
-                console.log("Loading " + type);
                 if ($scope[type]) {
-                    console.log("From cache");
                     return;
                 }
                 return SFMap.get(type)()
                     .then(function(res) {
-                        console.log("Setting " + type);
                         $scope[type] = res.data;
 
                     }, function(res) {
-                        console.log("Impossible to load " + type);
+                        console.error("Impossible to load " + type);
 
                     });
             }
@@ -89,8 +86,6 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                                 fn(vehicles, routeTag, route.getColor());
                             });
 
-                            console.log(data);
-                            console.log(routeTag)
                         }
                         , rejectHandler)
 

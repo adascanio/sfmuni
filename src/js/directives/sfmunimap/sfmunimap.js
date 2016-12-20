@@ -50,17 +50,14 @@ angular.module('SFmuniMap', [])
                         yy = props.matchTranslate[2] * 1;
                     }
 
-                    console.log(xx + ' ' + yy)
 
                     //calculate offser from top left
                     var x = d3.event.x;
                     var y = d3.event.y;
-                    console.log(x + ' ' + y)
 
                     d3.event.on("drag", dragged).on("end", ended);
 
                     function dragged(d) {
-                        console.log(d3.event.x + ' ' + (d3.event.y))
 
                         var props = getTransformProperties(elm);
 
@@ -86,7 +83,7 @@ angular.module('SFmuniMap', [])
                 scope.zoomLevel = 1;
                 scope.zoomRange = [1, 3];
                 var zoomStep = 0.5;
-                svg.attr("data-zoom" , scope.zoomLevel);
+                svg.attr("data-zoom", scope.zoomLevel);
                 function zoom(sign, threshold) {
                     if (scope.zoomLevel === threshold) {
                         return;
@@ -100,9 +97,8 @@ angular.module('SFmuniMap', [])
                     var scaleStr = "scale(" + scope.zoomLevel + ")";
                     transform = transform.indexOf("scale") >= 0 ? transform.replace(/scale\(-?[0-9]+(\.[0-9]+)?\)/g, scaleStr) : transform + scaleStr;
                     rootGroup.attr("transform", transform);
-                    console.log("zoomed " + scope.zoomLevel);
 
-                    svg.attr("data-zoom" , scope.zoomLevel);
+                    svg.attr("data-zoom", scope.zoomLevel);
 
                 }
 
@@ -131,7 +127,7 @@ angular.module('SFmuniMap', [])
                     if (newValue) {
                         printMap();
                     }
- 
+
                 });
 
 
@@ -169,7 +165,6 @@ angular.module('SFmuniMap', [])
                  * Draw Route on svg
                  */
                 function drawRoute(routeId) {
-                    console.log("add route " + routeId);
                     drawPath({
                         selector: '.route',
                         attrs: {
@@ -193,7 +188,6 @@ angular.module('SFmuniMap', [])
 
                     d3.selectAll(".route-group-" + routeId).remove();
 
-                    console.log("remove route " + routeId);
                 }
 
                 function toggleRoute(routeId, show) {
@@ -361,7 +355,7 @@ angular.module('SFmuniMap', [])
                  * }
                  * </pre>
                  */
-                function drawPath(options ) {
+                function drawPath(options) {
 
                     var svgmap = svg.select("g")
                         .append("g")
