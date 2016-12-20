@@ -289,50 +289,56 @@ angular.module('SFmuniMap', [])
                     enterElms.attr("d", geoPath)
 
                         .on("mouseover", function(d, i, elm) {
-                            var w = 230, h = 50, yText = 130, yRect = 95, xRect = 95;
-                            svg.append("rect")
+
+                            var item = elm[0],
+                                fill = "#000",
+                                unknownTag = "??",
+                                unknownTitle = "unkown";
+
+                            if (item) {
+                                fill = item.getAttribute("fill");
+                                unknownTag = null;
+                                unknownTitle = null;
+                            }
+
+                            var yText = 130,
+                                yRect = 95,
+                                xRect = 95,
+                                xText = 110;
+
+
+                            var container = svg.append("g").attr("class", "vehicle-info-container");
+                            container.append("rect")
                                 .attr("id", "text-" + d.properties.id)
-                                .attr("class", "vehicle-info")
+                                .attr("class", "vehicle-info vehicle-info-content")
                                 .attr("y", yRect)
+                                .attr("x", xRect)
                                 .attr("rx", 4)
                                 .attr("ry", 4)
-                                .attr("x", xRect)
-                                .attr("width", w)
-                                .attr("height", h)
-                                .attr("fill", "#fff")
-                                .attr("stroke", function() {
-                                    return elm[0].getAttribute("fill");
-                                })
-                                .attr("stroke-width", 3);
+                                .attr("stroke", fill)
 
-                            svg.append("text")
+                            var text = container.append("text")
                                 .attr("class", "vehicle-info")
                                 .attr("y", yText)
-                                .attr("x", 120)
-                                .attr("font-size", 30)
-                                .attr("fill", function() {
-                                    return elm[0].getAttribute("fill");
-                                })
-                                .text(d.properties.routeTag)
-
-                            svg.append("text")
-                                .attr("class", "vehicle-info")
-                                .attr("y", yText)
-                                .attr("x", 235)
-                                .attr("font-size", 30)
+                                .attr("x", xText)
+                                .attr("fill", fill);
+                            text.append("tspan")
+                                .attr("class", "vehicle-info vehicle-info-route-tag")
+                                .text(unknownTag || d.properties.routeTag)
+                                .attr("x", xText)
+                            text.append("tspan")
+                                .attr("class", "vehicle-info vehicle-info-speed")
                                 .text(d.properties.speedKmHr)
+                                .attr("x", xText + 125)
 
-                            svg.append("text")
-                                .attr("class", "vehicle-info")
-                                .attr("y", yText)
-                                .attr("x", 270)
-                                .attr("font-size", 15)
+                            text.append("tspan")
+                                .attr("class", "vehicle-info vehicle-info-kmhr")
                                 .text("Km/hr")
-
+                                .attr("x", xText + 160)
 
                         })
                         .on("mouseout", function(d) {
-                            svg.selectAll(".vehicle-info").remove();
+                            //svg.selectAll(".vehicle-info-container").remove();
                         })
 
                     enterElms = enterElms.attr("fill", "transparent")
