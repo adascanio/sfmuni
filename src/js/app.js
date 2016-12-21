@@ -4,5 +4,7 @@ angular.module('sfmuniApp',
  'sfmuniAppCtrl',
  'NextBusService',
  'HomeCtrl',
- 'SFmuniMap'
+ 'MapCtrl',
+ 'SFmuniMap',
+ 'BusMap'
  ]);

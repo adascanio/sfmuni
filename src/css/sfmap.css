@@ -66,10 +66,15 @@ path.vehicle {
     cursor : pointer;
 }
 
+
 .zoom-control {
     position: absolute;
     bottom: 30px;
     left: 30px;
+}
+
+.zoom-control.no-zoom{
+    display : none;
 }
 
 rect.vehicle-info.vehicle-info-header{

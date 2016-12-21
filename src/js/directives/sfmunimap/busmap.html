@@ -1,0 +1,27 @@
+
+<div class="geomap-container " ng-class="{ 'loaded' : loaded}">
+    <div class="wait-overlay">
+        <div class="loader"></div>
+    </div>
+    <svg id="sf-map" class="geomap"></svg>
+    
+    <div class="zoom-control" ng-class="{'no-zoom' : !zoom}">
+        <div class="btn-group-vertical btn-group">
+            <button ng-click="zoomIn()" 
+            ng-disabled="zoomLevel === zoomRange[1]" 
+            class="btn btn-default" 
+            aria-label="zoom in"
+            data-toggle="tooltip" data-placement="left" title="Zoom in">
+                <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+            </button>
+            <button ng-click="zoomOut()" 
+            ng-disabled="zoomLevel === zoomRange[0]" 
+            class="btn btn-default" 
+            aria-label="zoom out"
+            data-toggle="tooltip" data-placement="right" title="Zoom out">
+                <span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+</div>
