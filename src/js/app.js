@@ -6,5 +6,6 @@ angular.module('sfmuniApp',
  'HomeCtrl',
  'MapCtrl',
  'SFmuniMap',
- 'BusMap'
+ 'BusMap',
+ 'MapPageCtrl'
  ]);

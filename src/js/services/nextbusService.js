@@ -173,7 +173,8 @@ angular.module('NextBusService', [])
                     "properties": {
                         "id": vehicle._id,
                         "speedKmHr": vehicle._speedKmHr,
-                        "routeTag": vehicle._routeTag
+                        "routeTag": vehicle._routeTag,
+                        "heading" : vehicle._heading
                     },
                     "geometry": {
                         "type": "Point",

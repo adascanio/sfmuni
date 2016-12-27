@@ -1,5 +1,5 @@
-angular.module('BusMap', [])
-    .directive('busMap', function() {
+angular.module('BusMap', ['MapCtrl'])
+    .directive('busMap', ["$log", function($log) {
 
         function link (scope, element, attr) {
 
@@ -31,13 +31,82 @@ angular.module('BusMap', [])
                     }
                 })
 
-                if (scope.pan) {
+                scope.$watchCollection("selectedRoutes", function (newValue, oldValue) {
+
+                    var diff = routeDiff(newValue, oldValue);
+
+                    showRoutes(diff.added);
+                    hideRoutes(diff.removed);
+
+                })
+
+                scope.$watch("updateVehicles", function (newValue, oldValue) {
+
+                    angular.forEach(scope.vehicles,function(vehicle, key) {
+                        
+                        var routeTag = vehicle.routeTag;
+                        if (routeTag == null) {
+                            return;
+                        }
+                        var route = scope.selectedRoutes[routeTag];
+                        var color = route.color;
+                        
+                        drawVehicle({
+                                selector: '.vehicle',
+                                attrs: {
+                                    fill: color,
+                                    stroke: color,
+                                    class: function(d) {
+                                        return ['vehicle', 'vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-id-' + d.properties.id].join(' ')
+                                    }
+                                },
+                                groupClasses: function(d) {
+                                    return ['vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-group-' + d.properties.id].join(' ')
+                                },
+                                data: vehicle.feature || []
+                            });
+                    })
+                    //drawRoute("E")
+                    
+                })
+
+                if (scope.pan == null ||  scope.pan === true) {
                     attachPan();
                 }
                 if (scope.zoom) {
                     //Attach zoom
                 }
             }
+
+            function routeDiff (newValue, oldValue) {
+                var added = [];
+                angular.forEach(newValue, function(value, key){
+                    if (oldValue[key]) {
+                        delete oldValue[key];
+                    }
+                    else {
+                        added.push(key);
+                    }
+                });
+                return {
+                    added :added,
+                    removed : Object.keys(oldValue)
+                }
+            }
+
+            function showRoutes(routeTags) {
+                angular.forEach(routeTags, function(routeTags){
+
+                    drawRoute(routeTags);
+
+                });
+            };
+
+            function hideRoutes(routeTags) {
+                angular.forEach(routeTags, function(routeTag){
+                    d3.selectAll(".route-group-" + routeTag).remove();
+                });
+            };
 
 
 
@@ -106,6 +175,26 @@ angular.module('BusMap', [])
                     rootGroup.call(drag.on("start", started));
             }//ATTACH PAN
 
+            /**
+             * Draw Route on svg
+             */
+            function drawRoute(routeTag) {
+                drawPath({
+                    selector: '.route',
+                    attrs: {
+                        'fill': "none",
+                        'stroke': function(d) {
+                            return "#" + d.properties.color;
+                        },
+                        'stroke-width': 2,
+                        'class': ['route', 'route-' + routeTag, 'route-group-' + routeTag].join(' ')
+                    },
+                    groupClasses: ['route-group-' + routeTag].join(' '),
+
+                    data: scope.selectedRoutes[routeTag].features
+                });
+            }
+
             function printMap() {
                     //1. Map loaded already
                     //2. Streets
@@ -166,11 +255,75 @@ angular.module('BusMap', [])
 
                 };
 
+                /**
+                 * Draw vehicle on map
+                 */
+                function drawVehicle(options) {
+
+
+                    var svgmap = svg.select("g");
+
+                    var albersProjection = d3.geoAlbers()
+                        .scale(mapConfig.scale)
+                        .rotate(mapConfig.rotate)
+                        .center(mapConfig.center)
+                        .translate(mapConfig.translate);
+
+                    var geoPath = d3.geoPath()
+                        .projection(albersProjection);
+
+                    var elms = svgmap.selectAll("path" + options.selector);
+
+
+                    elms = elms.data(options.data, function(d) { return d.properties.id; })
+
+                    elms.transition()
+                        .duration(15000)
+                        .ease(d3.easeLinear)
+                        .attr("d", geoPath)
+
+                    angular.forEach(options.attrs, function(value, key) {
+                        elms = elms.attr(key, value);
+                    });
+
+                    var enterElms = elms.enter()
+
+                    enterElms = enterElms.append("path");
+                    enterElms.transition()
+                        .duration(1000)
+                        .ease(d3.easeLinear)
+                        .attr("fill", options.attrs.fill)
+                        .attr("stroke", options.attrs.stroke);
+
+
+                    enterElms.attr("d", geoPath)
+
+                        .on("click", function(d, i, elm) {
+                            scope.$apply(function(){
+                                var selected = $(elm).hasClass("selected");
+                                d3.select(".vehicle.selected").classed("selected", false);
+                                
+                                scope.selectedVehicle = d.properties;
+                                
+                                scope.showVehicleInfo = !selected
+                                
+                                $(elm).toggleClass("selected");
+                                
+                            })
+                        })
+                        
+
+                    enterElms = enterElms.attr("fill", "transparent")
+                        .attr("stroke", "transparent")
+                        .attr("class", options.attrs.class);
+
+                };
+
 
                 //ENTRY POINT
                 init()
 
-        }
+        }// Link function
 
 
         
@@ -179,13 +332,21 @@ angular.module('BusMap', [])
             restrict: 'E',
             templateUrl: 'static/js/directives/sfmunimap/busmap.html',
             link : link,
+            controller : 'MapController',
+            transclude : true,
             scope : {
-                map : "=map",
-                loaded : "=loaded",
                 config : "=config",
-                zoom : "@zoom", // eg {range [1,3], step 0.5, initial 2} | true (default [1,3] step 0.5 init 1 | false (no zoom) )
-                pan : "@pan" // default true
+                pan : "@pan"
+                /*map : "=map",
+                loaded : "=loaded",
+                toggleRouteOnLoad : "=toggleRouteOnLoad", // true select one arbitrary route | string select a specific route | false
+                routes : "=routes", //list of routes to be rendered
+                vehicles : "=vehicles", // vehicles to be rendered
+                config : "=config",
+                zoom : "=zoom", // eg {range [1,3], step 0.5, initial 2} | true (default [1,3] step 0.5 init 1 | false (no zoom) )
+                pan : "@pan", // default true
+                updateVehicles :  "=updateVehicles" // default true*/
             }
 
         };
-    });
+    }]);

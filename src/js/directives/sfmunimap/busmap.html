@@ -1,5 +1,29 @@
 
 <div class="geomap-container " ng-class="{ 'loaded' : loaded}">
+
+    <div class="panel panel-default vehicle-info" ng-class="{'show' : showVehicleInfo}">
+        <div class="panel-heading" ng-style="getInfoHeaderStyle(selectedVehicle.routeTag)">
+            {{selectedRoutes[selectedVehicle.routeTag].title}}
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="vehicle-id col-xs-12">Vehicle id: {{selectedVehicle.id}}</div> 
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <span class="vehicle-speed">{{selectedVehicle.speedKmHr}}</span><span>Km/h</span>
+                </div>
+                <div class="col-sm-4 vehicle-heading" >
+                    <span class="glyphicon glyphicon-arrow-up" 
+                            aria-label="heading {{selectedVehicle.heading}}"
+                            ng-style="getInfoHeadingStyle(selectedVehicle)"></span>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
     <div class="wait-overlay">
         <div class="loader"></div>
     </div>

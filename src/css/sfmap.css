@@ -77,6 +77,39 @@ path.vehicle {
     display : none;
 }
 
+.vehicle-info {
+    position: absolute;
+    top: 80px;
+    left: -300px;
+    transition: all 1s ease-in-out;
+}
+
+.vehicle-info.show {
+    left: 20px;
+}
+
+.vehicle-info .vehicle-heading > .glyphicon {
+    transition: all 1s cubic-bezier(1,-1.18,.4,1.99);
+    
+}
+
+.vehicle-info .vehicle-heading {
+    font-size: 30px;
+}
+
+.vehicle-info .vehicle-speed {
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.vehicle.selected {
+    stroke : red;
+    stroke-width: 2px;
+}
+
+
+/*DEPRECATED*/
+
 rect.vehicle-info.vehicle-info-header{
     height: 20px;
     width: 230px;
