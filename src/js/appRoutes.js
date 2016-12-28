@@ -8,10 +8,11 @@ angular.module('appRoutes', []).config(['$routeProvider', '$locationProvider',
                 templateUrl: 'static/views/home.html',
                 controller: 'HomeController'
             })
-            .when('/new', {
+            .when('/city/:cityCode', {
                 templateUrl: 'static/views/mapPage.html',
                 controller: 'MapPageController'
             })
+            .otherwise( '/')
 
         $locationProvider.html5Mode(true);
 

@@ -14,21 +14,17 @@ angular.module('BusMap', ['MapCtrl'])
 
 
             function init () {
-
-
-                
-                scope.$watch("loaded", function (newValue, oldValue) {
-                    if (scope.loaded) {
-                        drawPath({
-                            selector: '.neighborhoods',
-                            attrs: {
-                                class: 'neighborhoods map-feature'
-                            },
-                            data: scope.map.neighborhoods.features
-                        });
-
-                        printMap();
-                    }
+              
+                scope.$watchCollection("map", function (newMap, oldMap) {
+                   
+                   if (newMap.neighborhoods &&
+                        newMap.streets &&
+                        newMap.arteries &&
+                        newMap.freeways ) {
+                            scope.mapLoaded = true;
+                       printMap();
+                   }
+                    
                 })
 
                 scope.$watchCollection("selectedRoutes", function (newValue, oldValue) {
@@ -105,6 +101,12 @@ angular.module('BusMap', ['MapCtrl'])
             function hideRoutes(routeTags) {
                 angular.forEach(routeTags, function(routeTag){
                     d3.selectAll(".route-group-" + routeTag).remove();
+
+                    var selVehicle = scope.selectedVehicle;
+                    if (selVehicle && selVehicle.routeTag === routeTag) {
+                        scope.showVehicleInfo = false
+                    }
+
                 });
             };
 
@@ -197,6 +199,13 @@ angular.module('BusMap', ['MapCtrl'])
 
             function printMap() {
                     //1. Map loaded already
+                    drawPath({
+                        selector: '.neighborhoods',
+                        attrs: {
+                            class: 'neighborhoods map-feature'
+                        },
+                        data: scope.map.neighborhoods.features
+                    });
                     //2. Streets
                     drawPath({
                         selector: '.streets',
@@ -304,7 +313,6 @@ angular.module('BusMap', ['MapCtrl'])
                                 d3.select(".vehicle.selected").classed("selected", false);
                                 
                                 scope.selectedVehicle = d.properties;
-                                
                                 scope.showVehicleInfo = !selected
                                 
                                 $(elm).toggleClass("selected");
@@ -319,7 +327,6 @@ angular.module('BusMap', ['MapCtrl'])
 
                 };
 
-
                 //ENTRY POINT
                 init()
 
@@ -333,12 +340,11 @@ angular.module('BusMap', ['MapCtrl'])
             templateUrl: 'static/js/directives/sfmunimap/busmap.html',
             link : link,
             controller : 'MapController',
-            transclude : true,
             scope : {
                 config : "=config",
                 pan : "@pan"
-                /*map : "=map",
-                loaded : "=loaded",
+                //map : "=map",
+                /*loaded : "=loaded",
                 toggleRouteOnLoad : "=toggleRouteOnLoad", // true select one arbitrary route | string select a specific route | false
                 routes : "=routes", //list of routes to be rendered
                 vehicles : "=vehicles", // vehicles to be rendered

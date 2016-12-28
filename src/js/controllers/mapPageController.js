@@ -1,63 +1,81 @@
-angular.module('MapPageCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'RouteCollectionModule', 'VehicleModule', 'VehicleCollectionModule'])
+angular.module('MapPageCtrl', ['CitiesServiceFactoryModule', 'RouteModule', 'RouteCollectionModule'])
     .controller('MapPageController',
-    ["$scope", "$timeout", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection", "$log"
-        , function($scope, $timeout, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection, $log) {
-           
-           function rejectHandler(res) {
+    ["$scope", "$timeout", "CitiesServiceFactory", "$routeParams", "$q", "Route", "RouteCollection", "$log"
+        , function ($scope, $timeout, CitiesServiceFactory, $routeParams, $q, Route, RouteCollection, $log) {
+
+            function rejectHandler(res) {
                 $log.error("An error has occurred");
                 $log.error(res);
             };
 
+            var cityCode = $routeParams.cityCode;
+
+            $scope.cities = CitiesServiceFactory.cities;
+
+            $scope.mapService = CitiesServiceFactory.getMapService(cityCode);
+            $scope.busService = CitiesServiceFactory.getBusService(cityCode);
+            
+
             //Config inherited by the controller
-            $scope.mapConfig = {
-                scale: 500000,
-                rotate: [122.370, 0],
-                center: [0, 37.770]
-            }
+            $scope.mapConfig = $scope.mapService.config;
 
-           //load the route list
-           $scope.routes = new RouteCollection()
+            //load the route list
+            $scope.routes = new RouteCollection();
 
-           //Load routes and set them in the scope
-                NextBusFactory.getRoutes().then(function(data) {
-                    
-                    //display the route list panel at startup
-                    $scope.routesListVisible = true;
+            //Display flag for routes list
+            $scope.routesListVisible = false;
 
-                    var rawRoutes = data;
+            //Load routes and set them in the scope
+            $scope.busService.getRoutes().then(function (data) {
 
-                    angular.forEach(rawRoutes, function(rawRoute, index) {
+                $scope.routesListVisible = true;
 
-                        var routeModel = new Route({
-                            tag: rawRoute._tag,
-                            title: rawRoute._title,
-                            rank: index
-                        });
-                        $scope.routes.set(routeModel);
+                var rawRoutes = data;
 
-                       
+                angular.forEach(rawRoutes, function (rawRoute, index) {
+
+                    var routeModel = new Route({
+                        tag: rawRoute._tag,
+                        title: rawRoute._title,
+                        rank: index
                     });
+                    $scope.routes.set(routeModel);
 
 
-                }
+                });
+                $scope.routesLoaded = true;
+
+            }
                 , rejectHandler);
 
             //select route
-            $scope.$on("map:loaded", function(){
+            $scope.$on("map:loaded", function () {
 
-                var firstRoute = $scope.routes.getAllAsArray()[0];
+                $scope.$watch("routesLoaded", function (newValue, oldValue) {
 
-                if (firstRoute) {
-                    //toggleRoute(firstRoute, true);
-                    $scope.$broadcast("route:selected", firstRoute.tag);
-                    
-                }
+                    if (newValue) {
 
-                
+                        var firstRoute = $scope.routes.getAllAsArray()[0];
+
+                        if (firstRoute) {
+
+                            //Toggle the first route and ask for immediate polling
+                            $scope.$broadcast("route:toggle", firstRoute.tag, true);
+
+                        }
+
+                    }
+
+                })
+
             });
 
-            $scope.$on("map:route:show", function(event, route){
-                
+
+            /**
+             * Update route status for routeslist display
+             */
+            $scope.$on("map:route:show", function (event, route) {
+
                 var newRoute = $scope.routes.get(route.tag);
 
                 newRoute.setColor(route.color)
@@ -68,8 +86,11 @@ angular.module('MapPageCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 
 
             });
 
-            $scope.$on("map:route:hide", function(event, routeTag){
-                
+            /**
+             * Update route status for hiding routes in routeslist
+             */
+            $scope.$on("map:route:hide", function (event, routeTag) {
+
                 var newRoute = $scope.routes.get(routeTag);
 
                 newRoute.setSelected(false);
@@ -78,21 +99,31 @@ angular.module('MapPageCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 
 
             });
 
-            $scope.$on("map:route:vehicle:loaded", function(event, routeTag){
+            /**
+             * Update route waiting status whens vehicle locations have been fetched
+             */
+            $scope.$on("map:route:vehicle:loaded", function (event, routeTag) {
                 var newRoute = $scope.routes.get(routeTag);
                 newRoute.setWaiting(false);
                 $scope.routes.set(newRoute)
             })
 
 
-            $scope.toggleRoute = function (route, isSelected) {
+            /**
+             * Inform sub controllers that a route has been toggled 
+             */
+            $scope.toggleRoute = function (route) {
 
-                $scope.$broadcast("route:selected", route.tag);
+                $scope.$broadcast("route:toggle", route.tag);
 
             };
 
-            
+            /**
+             * Toggle the route list
+             */
+            $scope.toggleRoutesList = function () {
+                $scope.routesListVisible = !$scope.routesListVisible;
+            }
 
-            
-           
+
         }]);

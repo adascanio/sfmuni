@@ -1,5 +1,5 @@
 
-angular.module('SFMapService', []).factory('SFMap', ['$http','$log', function ($http, $log) {
+angular.module('SFMapService', []).factory('SFMap', ['$http', '$log', function ($http, $log) {
 
     function getNeighborhoods() {
         $log.info("Service getNeighborhoods")
@@ -20,6 +20,13 @@ angular.module('SFMapService', []).factory('SFMap', ['$http','$log', function ($
         $log.info("Service getStreets")
         return $http.get('static/js/sfmaps/streets.json');
     };
+
+    var config = {
+        scale: 500000,
+        rotate: [122.370, 0],
+        center: [0, 37.770]
+    }
+
     return {
 
         get: function (type) {
@@ -37,7 +44,9 @@ angular.module('SFMapService', []).factory('SFMap', ['$http','$log', function ($
 
         getArteries: getArteries,
 
-        getStreets: getStreets
+        getStreets: getStreets,
+
+        config: config
 
     }
 
