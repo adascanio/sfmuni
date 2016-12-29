@@ -7,13 +7,26 @@ angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapSer
                 code: "SFO",
                 name: "San Francisco",
                 busServiceName: "nextbus",
-                agencyName : "sf-muni"
+                agencyName: "sf-muni",
+                mapConfig: {
+                    scale: 500000,
+                    rotate: [122.370, 0],
+                    center: [0, 37.770],
+                    availableMaps: ['neighborhoods', 'streets', 'arteries', 'freeways']
+                }
             },
-            LAX : {
+            LAX: {
                 code: "LAX",
                 name: "Los Angeles",
                 busServiceName: "nextbus",
-                agencyName : "lametro"
+                agencyName: "lametro",
+                availableMaps: ['neighborhoods'],
+                mapConfig: {
+                    scale: 100000,
+                    rotate: [118.243, 0],
+                    center: [0, 34.052],
+                    availableMaps: ['neighborhoods'],
+                }
             }
         }
 
@@ -28,7 +41,7 @@ angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapSer
         getMapService = function (cityCode) {
             var city = cities[cityCode];
 
-            return MapServiceFactory.getMapService(city.code);
+            return MapServiceFactory.getMapService(city);
 
         }
 

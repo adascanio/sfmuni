@@ -17,20 +17,33 @@ angular.module('BusMap', ['MapCtrl'])
              */
             scope.mapLoaded = false;
 
+            function isMapLoaded(map) {
+
+                var availableMaps = mapConfig.availableMaps;
+                for (var i = 0, len = availableMaps.length; i < len; i++) {
+                    if (!map[availableMaps[i]]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
 
             /**
              * Entry point
              */
             function init() {
 
-                scope.$watchCollection("map", function (newMap, oldMap) {
+                /*scope.$watchCollection("map", function (newMap, oldMap) {
 
-                    if (newMap.neighborhoods &&
-                        newMap.streets &&
-                        newMap.arteries &&
-                        newMap.freeways) {
+                    if (isMapLoaded(newMap)) {
 
                         scope.mapLoaded = true;
+                        printMap();
+                    }
+
+                })*/
+                scope.$watch("mapLoaded", function (newValue, oldValue) {
+                    if (newValue) {
                         printMap();
                     }
 
@@ -82,7 +95,7 @@ angular.module('BusMap', ['MapCtrl'])
 
                 //Zoom enabled by default
                 if (scope.zoom == null || scope.zoom) {
-                    attachZoom(scope.zoom )
+                    attachZoom(scope.zoom)
                 }
             }
 
@@ -268,42 +281,20 @@ angular.module('BusMap', ['MapCtrl'])
             };
 
             function printMap() {
-                //1. Map loaded already
-                drawPath({
-                    selector: '.neighborhoods',
-                    attrs: {
-                        class: 'neighborhoods map-feature'
-                    },
-                    data: scope.map.neighborhoods.features
-                });
-                //2. Streets
-                drawPath({
-                    selector: '.streets',
-                    attrs: {
-                        class: 'streets empty-path map-feature'
-                    },
-                    data: scope.map.streets.features
-                });
-
-                //3. Arteries
-                drawPath({
-                    selector: '.arteries',
-                    attrs: {
-                        class: 'arteries empty-path map-feature',
-                    },
-                    data: scope.map.arteries.features
-                });
-
-                //4. Freeways
-                drawPath({
-                    selector: '.freeways',
-                    attrs: {
-                        class: 'freeways empty-path map-feature'
-                    },
-                    data: scope.map.freeways.features
-                });
-            };
-
+                angular.forEach(mapConfig.availableMaps, function (value) {
+                    var emptyClass = '';
+                    if (value !== "neighborhoods") {
+                        emptyClass = 'empty-path';
+                    }
+                    drawPath({
+                        selector: '.' + value,
+                        attrs: {
+                            class: value + ' map-feature ' + emptyClass
+                        },
+                        data: scope.map[value].features
+                    })
+                })
+            }
 
             function drawPath(options) {
 

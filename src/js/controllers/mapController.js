@@ -62,9 +62,9 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                 if ($scope.map[type]) {
                     return;
                 }
-                return MapService.get(type)()
+                return MapService.get(type)
                     .then(function (res) {
-                        $scope.map[type] = res.data;
+                        $scope.map[type] = res;
 
                     }, function (res) {
                         $log.error("Impossible to load " + type);
@@ -80,7 +80,7 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
 
                 fetchVehiclesLocation();
 
-                $timeout(polling, POLLING_TICK);
+                $scope.timer = $timeout(polling, POLLING_TICK);
             };
 
 
@@ -173,10 +173,27 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                 }
             }
 
+            function isMapLoaded(map) {
+                
+                var availableMaps = $scope.$parent.mapConfig.availableMaps;
+                for (var i = 0, len = availableMaps.length; i < len; i++) {
+                    if (!map[availableMaps[i]]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
             /**
              * Entry point function
              */
             function init() {
+
+                $scope.$on("$destroy", function() {
+                    if ($scope.timer) {
+                        $timeout.cancel($scope.timer);
+                    }
+                });
 
                 /**
                  * Register listener to toggle route
@@ -188,7 +205,18 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                     $scope.toggleRoute(routeTag, poll);
                 });
 
-                loadMapData('neighborhoods')
+                angular.forEach($scope.$parent.mapConfig.availableMaps, function(value) {
+                     loadMapData(value);
+                })
+
+                $scope.$watchCollection('map', function(newMap, oldMap){
+                     if (isMapLoaded(newMap)) {
+                        $scope.mapLoaded = true;
+                        $scope.$emit("map:loaded");
+                    }
+                })
+
+                /*loadMapData('neighborhoods')
                     .then(function () {
 
                         return $q.all([loadMapData('streets'), loadMapData('arteries'), loadMapData('freeways')]);
@@ -197,7 +225,7 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
 
                         $scope.$emit("map:loaded");
 
-                    });
+                    });*/
 
 
             } // init

@@ -26,7 +26,7 @@ angular.module('NextBusService', [])
                         return $q(function (resolve, reject) {
                             var json = toJson(res.data);
                             if (!json || json.body.Error) {
-                                var error = json ? json.body.Error : { Error: "An error has occurrd for the request " + options }
+                                var error = json ? json.body.Error : { Error: "An error has occurrd for the request ", args : options }
                                 reject(error);
                             }
                             else {

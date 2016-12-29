@@ -14,10 +14,10 @@ angular.module('MapPageCtrl', ['CitiesServiceFactoryModule', 'RouteModule', 'Rou
 
             $scope.mapService = CitiesServiceFactory.getMapService(cityCode);
             $scope.busService = CitiesServiceFactory.getBusService(cityCode);
-            
+
 
             //Config inherited by the controller
-            $scope.mapConfig = $scope.mapService.config;
+            $scope.mapConfig = $scope.mapService.mapConfig;
 
             //load the route list
             $scope.routes = new RouteCollection();
@@ -25,28 +25,6 @@ angular.module('MapPageCtrl', ['CitiesServiceFactoryModule', 'RouteModule', 'Rou
             //Display flag for routes list
             $scope.routesListVisible = false;
 
-            //Load routes and set them in the scope
-            $scope.busService.getRoutes().then(function (data) {
-
-                $scope.routesListVisible = true;
-
-                var rawRoutes = data;
-
-                angular.forEach(rawRoutes, function (rawRoute, index) {
-
-                    var routeModel = new Route({
-                        tag: rawRoute._tag,
-                        title: rawRoute._title,
-                        rank: index
-                    });
-                    $scope.routes.set(routeModel);
-
-
-                });
-                $scope.routesLoaded = true;
-
-            }
-                , rejectHandler);
 
             //select route
             $scope.$on("map:loaded", function () {
@@ -124,6 +102,35 @@ angular.module('MapPageCtrl', ['CitiesServiceFactoryModule', 'RouteModule', 'Rou
             $scope.toggleRoutesList = function () {
                 $scope.routesListVisible = !$scope.routesListVisible;
             }
+
+            function init() {
+
+                //Load routes and set them in the scope
+                $scope.busService.getRoutes().then(function (data) {
+
+                    $scope.routesListVisible = true;
+
+                    var rawRoutes = data;
+
+                    angular.forEach(rawRoutes, function (rawRoute, index) {
+
+                        var routeModel = new Route({
+                            tag: rawRoute._tag,
+                            title: rawRoute._title,
+                            rank: index
+                        });
+                        $scope.routes.set(routeModel);
+
+
+                    });
+                    $scope.routesLoaded = true;
+
+                }
+                    , rejectHandler);
+
+            };
+
+            init();
 
 
         }]);
