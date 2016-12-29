@@ -5,8 +5,7 @@ angular.module('appRoutes', []).config(['$routeProvider', '$locationProvider',
 
             // home page
             .when('/', {
-                templateUrl: 'static/views/home.html',
-                controller: 'HomeController'
+                redirectTo : '/city/SFO'
             })
             .when('/city/:cityCode', {
                 templateUrl: 'static/views/mapPage.html',
