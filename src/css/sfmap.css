@@ -82,6 +82,7 @@ path.vehicle {
     top: 80px;
     left: -300px;
     transition: all 0.5s ease-in-out;
+    min-width : 200px;
 }
 
 .vehicle-info.show {

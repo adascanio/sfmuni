@@ -20,11 +20,22 @@ angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapSer
                 name: "Los Angeles",
                 busServiceName: "nextbus",
                 agencyName: "lametro",
-                availableMaps: ['neighborhoods'],
                 mapConfig: {
                     scale: 100000,
                     rotate: [118.243, 0],
                     center: [0, 34.052],
+                    availableMaps: ['neighborhoods'],
+                }
+            },
+            BOS: {
+                code: "BOS",
+                name: "Boston",
+                busServiceName: "nextbus",
+                agencyName: "mbta",
+                mapConfig: {
+                    scale: 250000,
+                    rotate: [71.059, 0],
+                    center: [0, 42.330],
                     availableMaps: ['neighborhoods'],
                 }
             }

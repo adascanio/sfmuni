@@ -9,6 +9,7 @@ angular.module('MapServiceFactoryModule', ['SFOMapService','LAXMapService', 'Loc
             switch (config.code.toUpperCase()) {
                 case 'SFO': return new LocalMapService(config);
                 case 'LAX': return new LocalMapService(config);
+                case 'BOS': return new LocalMapService(config);
                 default: return null;
 
             }
