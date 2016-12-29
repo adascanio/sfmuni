@@ -81,11 +81,19 @@ path.vehicle {
     position: absolute;
     top: 80px;
     left: -300px;
-    transition: all 1s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
 
 .vehicle-info.show {
     left: 20px;
+}
+
+.vehicle-info .close-btn {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    background-color: transparent;
+    border: none;
 }
 
 .vehicle-info .vehicle-heading > .glyphicon {

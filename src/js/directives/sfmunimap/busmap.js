@@ -17,6 +17,16 @@ angular.module('BusMap', ['MapCtrl'])
              */
             scope.mapLoaded = false;
 
+            /**
+             * vehicle to be displayed in the popup
+             */
+            scope.selectedVehicle = {};
+
+            /**
+             * whether the vehicle should be shown/higlighted
+             */
+            scope.showVehicleInfo = false;
+
             function isMapLoaded(map) {
 
                 var availableMaps = mapConfig.availableMaps;
@@ -33,15 +43,6 @@ angular.module('BusMap', ['MapCtrl'])
              */
             function init() {
 
-                /*scope.$watchCollection("map", function (newMap, oldMap) {
-
-                    if (isMapLoaded(newMap)) {
-
-                        scope.mapLoaded = true;
-                        printMap();
-                    }
-
-                })*/
                 scope.$watch("mapLoaded", function (newValue, oldValue) {
                     if (newValue) {
                         printMap();
@@ -75,7 +76,11 @@ angular.module('BusMap', ['MapCtrl'])
                                 fill: color,
                                 stroke: color,
                                 class: function (d) {
-                                    return ['vehicle', 'vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-id-' + d.properties.id].join(' ')
+                                    var selected = '';
+                                    if (scope.selectedVehicle.id === d.properties.id && scope.showVehicleInfo) {
+                                        selected = 'selected';
+                                    }
+                                    return ['vehicle', 'vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-id-' + d.properties.id, selected].join(' ')
                                 }
                             },
                             groupClasses: function (d) {
@@ -97,6 +102,12 @@ angular.module('BusMap', ['MapCtrl'])
                 if (scope.zoom == null || scope.zoom) {
                     attachZoom(scope.zoom)
                 }
+            }
+
+            scope.hideVehicleInfo = function  () {
+                scope.showVehicleInfo = false;
+                d3.select(".vehicle-id-" + scope.selectedVehicle.id).classed("selected", false);
+                
             }
 
             function routeDiff(newValue, oldValue) {
@@ -347,6 +358,8 @@ angular.module('BusMap', ['MapCtrl'])
 
                 elms = elms.data(options.data, function (d) { return d.properties.id; })
 
+                
+
                 elms.transition()
                     .duration(15000)
                     .ease(d3.easeLinear)
@@ -376,7 +389,10 @@ angular.module('BusMap', ['MapCtrl'])
                             scope.selectedVehicle = d.properties;
                             scope.showVehicleInfo = !selected
 
-                            $(elm).toggleClass("selected");
+                            if (!selected) {
+                                $(elm).toggleClass("selected");
+                            }
+
 
                         })
                     })

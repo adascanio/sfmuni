@@ -3,7 +3,17 @@
 
     <div class="panel panel-default vehicle-info" ng-class="{'show' : showVehicleInfo}">
         <div class="panel-heading" ng-style="getInfoHeaderStyle(selectedVehicle.routeTag)">
-            {{selectedRoutes[selectedVehicle.routeTag].title}}
+            
+                
+                    {{selectedRoutes[selectedVehicle.routeTag].title}}
+                
+              
+                    <button type="button" class="btn btn-default close-btn" ng-click="hideVehicleInfo()">
+                        <span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    </button>
+               
+            
+           
         </div>
         <div class="panel-body">
             <div class="row">

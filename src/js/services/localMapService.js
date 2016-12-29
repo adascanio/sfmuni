@@ -26,6 +26,7 @@ angular.module('LocalMapServiceModule', []).factory('LocalMapService', ['$http',
                 var cache = $cacheFactory.get(cacheOptions.cacheName);
                 var cachedJson = cache ? cache.get(cacheOptions.key) : null;
                 if (cachedJson) {
+                    $log.info("Map " + cacheOptions.cacheName + "->" + cacheOptions.key + " from cache");
                     return $q(function (resolve, reject) {
                         resolve(cachedJson);
                     })
@@ -39,7 +40,7 @@ angular.module('LocalMapServiceModule', []).factory('LocalMapService', ['$http',
                         var json = angular.fromJson(res.data);
                         if (useCache) {
                             var cache = $cacheFactory.get(cacheOptions.cacheName) || $cacheFactory(cacheOptions.cacheName);
-                            cache.put(cacheOptions.key);
+                            cache.put(cacheOptions.key, json);
                         }
 
                         resolve(json);

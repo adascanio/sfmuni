@@ -147,10 +147,11 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
              * @return {json} object containing the style to be applied to the header
              */
             $scope.getInfoHeaderStyle = function (routeTag) {
-                if (!routeTag) {
+                var route = $scope.selectedRoutes[routeTag];
+                if (routeTag == null || route == null) {
                     return {};
                 }
-                var route = $scope.selectedRoutes[routeTag];
+                
                 return {
                     'background-color': route.color,
                     'color': route.oppositeColor,
@@ -163,7 +164,7 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
              * @return {json} object containing the style to be applied to the heaing (arrows indicating the direction)
              */
             $scope.getInfoHeadingStyle = function (vehicle) {
-                if (!vehicle) {
+                if (vehicle == null || $scope.selectedRoutes[vehicle.routeTag] == null) {
                     return {};
                 }
                 var route = $scope.selectedRoutes[vehicle.routeTag];
@@ -216,16 +217,6 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                     }
                 })
 
-                /*loadMapData('neighborhoods')
-                    .then(function () {
-
-                        return $q.all([loadMapData('streets'), loadMapData('arteries'), loadMapData('freeways')]);
-                    })
-                    .then(function () {
-
-                        $scope.$emit("map:loaded");
-
-                    });*/
 
 
             } // init
