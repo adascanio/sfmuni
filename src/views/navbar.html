@@ -8,7 +8,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">RealTime SFmuni Map</a>
+      <a class="navbar-brand" href="/">RealTime Transportation Map</a>
     </div>
     
     <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -24,7 +24,7 @@
           </ul>
         </li>
       </ul>
-      <ul class="nav navbar-nav navbar-right ">
+      <ul class="nav navbar-nav navbar-right " ng-class="{'hidden' : !routes}">
         <li ng-class="{'active' : routesListVisible}">
           <a href="#" ng-click="toggleRoutesList()">Routes</a>
         </li>

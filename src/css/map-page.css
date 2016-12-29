@@ -1,0 +1,38 @@
+.routes-list-container {
+    position: fixed;
+    top: 50px;
+    right: -300px;
+    width: 300px;
+    height: 100vh;
+
+    -webkit-transition: right 500ms cubic-bezier(0.730, 0.420, 0.280, 1); /* older webkit */
+    -webkit-transition: right 500ms cubic-bezier(0.730, 0.420, 0.280, 1.005); 
+       -moz-transition: right 500ms cubic-bezier(0.730, 0.420, 0.280, 1.005); 
+         -o-transition: right 500ms cubic-bezier(0.730, 0.420, 0.280, 1.005); 
+            transition: right 500ms cubic-bezier(0.730, 0.420, 0.280, 1.005); /* custom */
+
+}
+
+.routes-list-container > ul {
+    height : 100%;
+    overflow: auto;
+    background-color : #e7e7e7;
+ 
+}
+
+.routes-list-container.visible {
+    right : 0;
+}
+
+.routes-list .loader.tiny{
+    display: inline-block;
+    margin: 2px auto;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+}
+
+.map-container {
+    width : 100%;
+    height : 100vh;
+}
