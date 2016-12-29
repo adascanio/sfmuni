@@ -1,30 +1,39 @@
 angular.module('BusMap', ['MapCtrl'])
-    .directive('busMap', ["$log", function($log) {
+    .directive('busMap', ["$log", function ($log) {
 
-        function link (scope, element, attr) {
+        function link(scope, element, attr) {
 
             var svg = d3.select("#sf-map")
-                svg.append("g")
+            svg.append("g")
 
             var width = svg.style("width").replace(/px/g, '')
             var height = svg.style("height").replace(/px/g, '')
 
             var mapConfig = scope.config;
-                mapConfig.translate = mapConfig.translate || [width / 2, height / 2];
+            mapConfig.translate = mapConfig.translate || [width / 2, height / 2];
+
+            /**
+             * Flag for triggering the map display 
+             */
+            scope.mapLoaded = false;
 
 
-            function init () {
-              
+            /**
+             * Entry point
+             */
+            function init() {
+
                 scope.$watchCollection("map", function (newMap, oldMap) {
-                   
-                   if (newMap.neighborhoods &&
+
+                    if (newMap.neighborhoods &&
                         newMap.streets &&
                         newMap.arteries &&
-                        newMap.freeways ) {
-                            scope.mapLoaded = true;
-                       printMap();
-                   }
-                    
+                        newMap.freeways) {
+
+                        scope.mapLoaded = true;
+                        printMap();
+                    }
+
                 })
 
                 scope.$watchCollection("selectedRoutes", function (newValue, oldValue) {
@@ -38,45 +47,48 @@ angular.module('BusMap', ['MapCtrl'])
 
                 scope.$watch("updateVehicles", function (newValue, oldValue) {
 
-                    angular.forEach(scope.vehicles,function(vehicle, key) {
-                        
+                    angular.forEach(scope.vehicles, function (vehicle, key) {
+
                         var routeTag = vehicle.routeTag;
                         if (routeTag == null) {
                             return;
                         }
                         var route = scope.selectedRoutes[routeTag];
                         var color = route.color;
-                        
+
                         drawVehicle({
-                                selector: '.vehicle',
-                                attrs: {
-                                    fill: color,
-                                    stroke: color,
-                                    class: function(d) {
-                                        return ['vehicle', 'vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-id-' + d.properties.id].join(' ')
-                                    }
-                                },
-                                groupClasses: function(d) {
-                                    return ['vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-group-' + d.properties.id].join(' ')
-                                },
-                                data: vehicle.feature || []
-                            });
+                            selector: '.vehicle',
+                            attrs: {
+                                fill: color,
+                                stroke: color,
+                                class: function (d) {
+                                    return ['vehicle', 'vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-id-' + d.properties.id].join(' ')
+                                }
+                            },
+                            groupClasses: function (d) {
+                                return ['vehicle-route-' + routeTag, 'route-group-' + routeTag, 'vehicle-group-' + d.properties.id].join(' ')
+                            },
+                            data: vehicle.feature || []
+                        });
                     })
                     //drawRoute("E")
-                    
+
                 })
 
-                if (scope.pan == null ||  scope.pan === true) {
+                //Pan enabled by default
+                if (scope.pan == null || scope.pan === true) {
                     attachPan();
                 }
-                if (scope.zoom) {
-                    //Attach zoom
+
+                //Zoom enabled by default
+                if (scope.zoom == null || scope.zoom) {
+                    attachZoom(scope.zoom )
                 }
             }
 
-            function routeDiff (newValue, oldValue) {
+            function routeDiff(newValue, oldValue) {
                 var added = [];
-                angular.forEach(newValue, function(value, key){
+                angular.forEach(newValue, function (value, key) {
                     if (oldValue[key]) {
                         delete oldValue[key];
                     }
@@ -85,13 +97,13 @@ angular.module('BusMap', ['MapCtrl'])
                     }
                 });
                 return {
-                    added :added,
-                    removed : Object.keys(oldValue)
+                    added: added,
+                    removed: Object.keys(oldValue)
                 }
             }
 
             function showRoutes(routeTags) {
-                angular.forEach(routeTags, function(routeTags){
+                angular.forEach(routeTags, function (routeTags) {
 
                     drawRoute(routeTags);
 
@@ -99,7 +111,7 @@ angular.module('BusMap', ['MapCtrl'])
             };
 
             function hideRoutes(routeTags) {
-                angular.forEach(routeTags, function(routeTag){
+                angular.forEach(routeTags, function (routeTag) {
                     d3.selectAll(".route-group-" + routeTag).remove();
 
                     var selVehicle = scope.selectedVehicle;
@@ -111,8 +123,10 @@ angular.module('BusMap', ['MapCtrl'])
             };
 
 
-
-            function attachPan () {
+            /**
+             * Enable pan behaviour on map
+             */
+            function attachPan() {
                 // Drag Event Handling
                 function getTransformProperties(elm) {
                     var transform = elm.attr("transform") || "";
@@ -170,22 +184,78 @@ angular.module('BusMap', ['MapCtrl'])
                         elm.classed("dragging", false);
                     }
 
-                    
-                } 
-                    var rootGroup = svg.select("g");
 
-                    rootGroup.call(drag.on("start", started));
-            }//ATTACH PAN
+                }
+                var rootGroup = svg.select("g");
+
+                rootGroup.call(drag.on("start", started));
+            };//ATTACH PAN
+
+            /**
+             * Enable zoom behaviour
+             * @param {Object|boolean} {range [1,3], step 0.5, initial 2} | true (default [1,3] step 0.5 init 1 | false (no zoom)
+             */
+            function attachZoom(zoomConfig) {
+
+                var rootGroup = svg.select("g");
+
+                //default values i.e. zoomConfig is true | undefined                
+                scope.zoomLevel = 1;
+                scope.zoomRange = [1, 3];
+                scope.zoomStep = 0.5;
+
+                if (zoomConfig instanceof Object) {
+                    scope.zoomLevel = zoomConfig.initial;
+                    scope.zoomRange = zoomConfig.range;
+                    scope.step = 0.5;
+                }
+                //zoom should not be attached
+                else if (zoomConfig === false) {
+                    return;
+                }
+
+
+
+                svg.attr("data-zoom", scope.zoomLevel);
+
+                function zoom(sign, threshold) {
+                    if (scope.zoomLevel === threshold) {
+                        return;
+                    }
+                    scope.zoomLevel = scope.zoomLevel + scope.zoomStep * sign;
+
+                    var transform = rootGroup.attr("transform");
+                    if (transform == null) {
+                        transform = "";
+                    }
+                    var scaleStr = "scale(" + scope.zoomLevel + ")";
+                    transform = transform.indexOf("scale") >= 0 ? transform.replace(/scale\(-?[0-9]+(\.[0-9]+)?\)/g, scaleStr) : transform + scaleStr;
+                    rootGroup.attr("transform", transform);
+
+                    svg.attr("data-zoom", scope.zoomLevel);
+
+                }
+
+                scope.zoomIn = function () {
+                    zoom(1, scope.zoomRange[1])
+                }
+
+                scope.zoomOut = function () {
+                    zoom(-1, scope.zoomRange[0])
+                }
+
+            }; //ATTACH ZOOM
 
             /**
              * Draw Route on svg
+             * @param {string} routeTag
              */
             function drawRoute(routeTag) {
                 drawPath({
                     selector: '.route',
                     attrs: {
                         'fill': "none",
-                        'stroke': function(d) {
+                        'stroke': function (d) {
                             return "#" + d.properties.color;
                         },
                         'stroke-width': 2,
@@ -195,154 +265,155 @@ angular.module('BusMap', ['MapCtrl'])
 
                     data: scope.selectedRoutes[routeTag].features
                 });
-            }
+            };
 
             function printMap() {
-                    //1. Map loaded already
-                    drawPath({
-                        selector: '.neighborhoods',
-                        attrs: {
-                            class: 'neighborhoods map-feature'
-                        },
-                        data: scope.map.neighborhoods.features
-                    });
-                    //2. Streets
-                    drawPath({
-                        selector: '.streets',
-                        attrs: {
-                            class: 'streets empty-path map-feature'
-                        },
-                        data: scope.map.streets.features
-                    });
+                //1. Map loaded already
+                drawPath({
+                    selector: '.neighborhoods',
+                    attrs: {
+                        class: 'neighborhoods map-feature'
+                    },
+                    data: scope.map.neighborhoods.features
+                });
+                //2. Streets
+                drawPath({
+                    selector: '.streets',
+                    attrs: {
+                        class: 'streets empty-path map-feature'
+                    },
+                    data: scope.map.streets.features
+                });
 
-                    //3. Arteries
-                    drawPath({
-                        selector: '.arteries',
-                        attrs: {
-                            class: 'arteries empty-path map-feature',
-                        },
-                        data: scope.map.arteries.features
-                    });
+                //3. Arteries
+                drawPath({
+                    selector: '.arteries',
+                    attrs: {
+                        class: 'arteries empty-path map-feature',
+                    },
+                    data: scope.map.arteries.features
+                });
 
-                    //4. Freeways
-                    drawPath({
-                        selector: '.freeways',
-                        attrs: {
-                            class: 'freeways empty-path map-feature'
-                        },
-                        data: scope.map.freeways.features
-                    });
-                }
-        
-
-        function drawPath(options) {
-
-                    var svgmap = svg.select("g")
-                        .append("g")
-                        .attr("class", options.groupClasses)
+                //4. Freeways
+                drawPath({
+                    selector: '.freeways',
+                    attrs: {
+                        class: 'freeways empty-path map-feature'
+                    },
+                    data: scope.map.freeways.features
+                });
+            };
 
 
-                    var albersProjection = d3.geoAlbers()
-                        .scale(mapConfig.scale)
-                        .rotate(mapConfig.rotate)
-                        .center(mapConfig.center)
-                        .translate(mapConfig.translate);
+            function drawPath(options) {
 
-                    var geoPath = d3.geoPath()
-                        .projection(albersProjection);
-
-                    var elms = svgmap.selectAll("path" + options.selector)
-                        .data(options.data)
-                        .enter()
-                        .append("g")
-                        .append("path")
-                        .attr("d", geoPath);
-
-                    angular.forEach(options.attrs, function(value, key) {
-                        elms.attr(key, value);
-                    });
-
-                };
-
-                /**
-                 * Draw vehicle on map
-                 */
-                function drawVehicle(options) {
+                var svgmap = svg.select("g")
+                    .append("g")
+                    .attr("class", options.groupClasses)
 
 
-                    var svgmap = svg.select("g");
+                var albersProjection = d3.geoAlbers()
+                    .scale(mapConfig.scale)
+                    .rotate(mapConfig.rotate)
+                    .center(mapConfig.center)
+                    .translate(mapConfig.translate);
 
-                    var albersProjection = d3.geoAlbers()
-                        .scale(mapConfig.scale)
-                        .rotate(mapConfig.rotate)
-                        .center(mapConfig.center)
-                        .translate(mapConfig.translate);
+                var geoPath = d3.geoPath()
+                    .projection(albersProjection);
 
-                    var geoPath = d3.geoPath()
-                        .projection(albersProjection);
+                var elms = svgmap.selectAll("path" + options.selector)
+                    .data(options.data)
+                    .enter()
+                    .append("g")
+                    .append("path")
+                    .attr("d", geoPath);
 
-                    var elms = svgmap.selectAll("path" + options.selector);
+                angular.forEach(options.attrs, function (value, key) {
+                    elms.attr(key, value);
+                });
 
+            };
 
-                    elms = elms.data(options.data, function(d) { return d.properties.id; })
-
-                    elms.transition()
-                        .duration(15000)
-                        .ease(d3.easeLinear)
-                        .attr("d", geoPath)
-
-                    angular.forEach(options.attrs, function(value, key) {
-                        elms = elms.attr(key, value);
-                    });
-
-                    var enterElms = elms.enter()
-
-                    enterElms = enterElms.append("path");
-                    enterElms.transition()
-                        .duration(1000)
-                        .ease(d3.easeLinear)
-                        .attr("fill", options.attrs.fill)
-                        .attr("stroke", options.attrs.stroke);
+            /**
+             * Draw vehicle on map
+             */
+            function drawVehicle(options) {
 
 
-                    enterElms.attr("d", geoPath)
+                var svgmap = svg.select("g");
 
-                        .on("click", function(d, i, elm) {
-                            scope.$apply(function(){
-                                var selected = $(elm).hasClass("selected");
-                                d3.select(".vehicle.selected").classed("selected", false);
-                                
-                                scope.selectedVehicle = d.properties;
-                                scope.showVehicleInfo = !selected
-                                
-                                $(elm).toggleClass("selected");
-                                
-                            })
+                var albersProjection = d3.geoAlbers()
+                    .scale(mapConfig.scale)
+                    .rotate(mapConfig.rotate)
+                    .center(mapConfig.center)
+                    .translate(mapConfig.translate);
+
+                var geoPath = d3.geoPath()
+                    .projection(albersProjection);
+
+                var elms = svgmap.selectAll("path" + options.selector);
+
+
+                elms = elms.data(options.data, function (d) { return d.properties.id; })
+
+                elms.transition()
+                    .duration(15000)
+                    .ease(d3.easeLinear)
+                    .attr("d", geoPath)
+
+                angular.forEach(options.attrs, function (value, key) {
+                    elms = elms.attr(key, value);
+                });
+
+                var enterElms = elms.enter()
+
+                enterElms = enterElms.append("path");
+                enterElms.transition()
+                    .duration(1000)
+                    .ease(d3.easeLinear)
+                    .attr("fill", options.attrs.fill)
+                    .attr("stroke", options.attrs.stroke);
+
+
+                enterElms.attr("d", geoPath)
+
+                    .on("click", function (d, i, elm) {
+                        scope.$apply(function () {
+                            var selected = $(elm).hasClass("selected");
+                            d3.select(".vehicle.selected").classed("selected", false);
+
+                            scope.selectedVehicle = d.properties;
+                            scope.showVehicleInfo = !selected
+
+                            $(elm).toggleClass("selected");
+
                         })
-                        
+                    })
 
-                    enterElms = enterElms.attr("fill", "transparent")
-                        .attr("stroke", "transparent")
-                        .attr("class", options.attrs.class);
 
-                };
+                enterElms = enterElms.attr("fill", "transparent")
+                    .attr("stroke", "transparent")
+                    .attr("class", options.attrs.class);
 
-                //ENTRY POINT
-                init()
+            };
+
+            //ENTRY POINT
+            init()
 
         }// Link function
 
 
-        
+
 
         return {
             restrict: 'E',
             templateUrl: 'static/js/directives/sfmunimap/busmap.html',
-            link : link,
-            controller : 'MapController',
-            scope : {
-                config : "=config",
-                pan : "@pan"
+            link: link,
+            controller: 'MapController',
+            scope: {
+                config: "=config",
+                pan: "@pan",
+                zoom: "=zoom", // eg {range [1,3], step 0.5, initial 2} | true (default [1,3] step 0.5 init 1 | false (no zoom) )
                 //map : "=map",
                 /*loaded : "=loaded",
                 toggleRouteOnLoad : "=toggleRouteOnLoad", // true select one arbitrary route | string select a specific route | false

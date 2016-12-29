@@ -1,7 +1,7 @@
-angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'RouteCollectionModule', 'VehicleModule', 'VehicleCollectionModule'])
+angular.module('HomeCtrl', ['NextBusService', 'SFOMapService', 'RouteModule', 'RouteCollectionModule', 'VehicleModule', 'VehicleCollectionModule'])
     .controller('HomeController',
-    ["$scope", "$timeout", "NextBusFactory", "SFMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection", "$log"
-        , function($scope, $timeout, NextBusFactory, SFMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection, $log) {
+    ["$scope", "$timeout", "NextBusFactory", "SFOMap", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection", "$log"
+        , function($scope, $timeout, NextBusFactory, SFOMap, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection, $log) {
 
             $scope.pollVehiclesSubscribers = [];
 
@@ -54,7 +54,7 @@ angular.module('HomeCtrl', ['NextBusService', 'SFMapService', 'RouteModule', 'Ro
                 if ($scope[type]) {
                     return;
                 }
-                return SFMap.get(type)()
+                return SFOMap.get(type)()
                     .then(function(res) {
                         $scope[type] = res.data;
 

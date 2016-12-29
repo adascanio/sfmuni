@@ -52,7 +52,7 @@ module.exports = function (grunt) {
       {
         expand: true,
         cwd: 'src/',
-        src: ['js/sfmaps/*.json'],
+        src: ['js/maps/**/*.json'],
         dest: 'public/'
       },
       // Views with subfolders and js 

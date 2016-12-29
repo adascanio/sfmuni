@@ -141,7 +141,11 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                 });
             };
 
-            // CSS functions
+            /**
+             * Get style for panel header information
+             * @param {string} routeTag
+             * @return {json} object containing the style to be applied to the header
+             */
             $scope.getInfoHeaderStyle = function (routeTag) {
                 if (!routeTag) {
                     return {};
@@ -153,6 +157,11 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                 }
             }
 
+            /**
+             * Get style for the heading (the arrow) information
+             * @param {Object} vehicle
+             * @return {json} object containing the style to be applied to the heaing (arrows indicating the direction)
+             */
             $scope.getInfoHeadingStyle = function (vehicle) {
                 if (!vehicle) {
                     return {};

@@ -1,30 +1,32 @@
 
-angular.module('SFMapService', []).factory('SFMap', ['$http', '$log', function ($http, $log) {
+angular.module('LAXMapService', []).factory('LAXMap', ['$http', '$log', function ($http, $log) {
+
+    var base = 'static/js/maps/lax/'
 
     function getNeighborhoods() {
         $log.info("Service getNeighborhoods")
-        return $http.get('static/js/sfmaps/neighborhoods.json');
+        return $http.get(base + 'neighborhoods.json');
     };
 
     function getFreeways() {
         $log.info("Service getFreeways")
-        return $http.get('static/js/sfmaps/freeways.json');
+        return $http.get(base + 'freeways.json');
     };
 
     function getArteries() {
         $log.info("Service getArteries")
-        return $http.get('static/js/sfmaps/arteries.json');
+        return $http.get(base + 'arteries.json');
     };
 
     function getStreets() {
         $log.info("Service getStreets")
-        return $http.get('static/js/sfmaps/streets.json');
+        return $http.get(base + 'streets.json');
     };
 
     var config = {
-        scale: 500000,
-        rotate: [122.370, 0],
-        center: [0, 37.770]
+        scale: 100000,
+        rotate: [118.243, 0],
+        center: [0, 34.052]
     }
 
     return {
