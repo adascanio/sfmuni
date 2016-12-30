@@ -5,11 +5,18 @@ angular.module('HomeCtrl', ['CitiesServiceFactoryModule'])
            
            $scope.cities = CitiesServiceFactory.cities;
 
-           $scope.mapService = CitiesServiceFactory.getMapService("SFO");
-           $scope.busService = CitiesServiceFactory.getBusService("SFO");
+           $scope.mapsProperties = [];
 
-           //Config inherited by the controller
-           $scope.mapConfig = $scope.mapService.mapConfig;
+           angular.forEach( $scope.cities, function (value, key){
+               var props = {};
+               props.key = key;
+               props.mapService = CitiesServiceFactory.getMapService(key);
+               props.busService = CitiesServiceFactory.getBusService(key);
+               props.static = true;
+               props.mapConfig = props.mapService.mapConfig;
 
+               $scope.mapsProperties.push(props);
+                
+           })
 
         }]);

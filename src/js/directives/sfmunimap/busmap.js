@@ -3,13 +3,15 @@ angular.module('BusMap', ['MapCtrl'])
 
         function link(scope, element, attr) {
 
-            var svg = d3.select("#sf-map")
+            //scope.svgId = scope.svgId || '';
+
+            var svg = d3.select("#sf-map");
             svg.append("g")
 
             var width = svg.style("width").replace(/px/g, '')
             var height = svg.style("height").replace(/px/g, '')
 
-            var mapConfig = scope.config;
+            var mapConfig = scope.mapConfig;
             mapConfig.translate = mapConfig.translate || [width / 2, height / 2];
 
             /**
@@ -94,12 +96,12 @@ angular.module('BusMap', ['MapCtrl'])
                 })
 
                 //Pan enabled by default
-                if (scope.pan == null || scope.pan === true) {
+                if ((scope.pan == null || scope.pan === true) && !scope.static) {
                     attachPan();
                 }
 
                 //Zoom enabled by default
-                if (scope.zoom == null || scope.zoom) {
+                if ((scope.zoom == null || scope.zoom) && !scope.static) {
                     attachZoom(scope.zoom)
                 }
             }
@@ -248,6 +250,11 @@ angular.module('BusMap', ['MapCtrl'])
                     }
                     scope.zoomLevel = scope.zoomLevel + scope.zoomStep * sign;
 
+                    applyZoom();
+
+                }
+
+                function applyZoom () {
                     var transform = rootGroup.attr("transform");
                     if (transform == null) {
                         transform = "";
@@ -257,7 +264,6 @@ angular.module('BusMap', ['MapCtrl'])
                     rootGroup.attr("transform", transform);
 
                     svg.attr("data-zoom", scope.zoomLevel);
-
                 }
 
                 scope.zoomIn = function () {
@@ -267,6 +273,8 @@ angular.module('BusMap', ['MapCtrl'])
                 scope.zoomOut = function () {
                     zoom(-1, scope.zoomRange[0])
                 }
+
+                applyZoom();
 
             }; //ATTACH ZOOM
 
@@ -410,17 +418,20 @@ angular.module('BusMap', ['MapCtrl'])
         }// Link function
 
 
-
-
         return {
             restrict: 'E',
             templateUrl: 'static/js/directives/sfmunimap/busmap.html',
             link: link,
             controller: 'MapController',
             scope: {
-                config: "=config",
-                pan: "@pan",
+                pan: "=pan",
                 zoom: "=zoom", // eg {range [1,3], step 0.5, initial 2} | true (default [1,3] step 0.5 init 1 | false (no zoom) )
+                busService : "=busservice",
+                mapService : "=mapservice",
+                static : "=static", //disable zoom and pan in one shot if true
+                mapConfig : "=mapconfig",
+                svgId : "=svgid"
+                //svgId : "=svgid"  //the id of the svg element
                 //map : "=map",
                 /*loaded : "=loaded",
                 toggleRouteOnLoad : "=toggleRouteOnLoad", // true select one arbitrary route | string select a specific route | false

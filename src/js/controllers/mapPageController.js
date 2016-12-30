@@ -8,12 +8,17 @@ angular.module('MapPageCtrl', ['CitiesServiceFactoryModule', 'RouteModule', 'Rou
                 $log.error(res);
             };
 
-            var cityCode = $routeParams.cityCode;
+            var cityCode = $routeParams.cityCode.toUpperCase();
 
             $scope.cities = CitiesServiceFactory.cities;
 
             $scope.mapService = CitiesServiceFactory.getMapService(cityCode);
             $scope.busService = CitiesServiceFactory.getBusService(cityCode);
+
+            //enable pan map
+            $scope.pan = true;
+
+            $scope.zoom = true;
 
 
             //Config inherited by the controller

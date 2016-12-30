@@ -39,7 +39,7 @@
     </div>
     <svg id="sf-map" class="geomap"></svg>
     
-    <div class="zoom-control" ng-class="{'no-zoom' : zoom === false}">
+    <div class="zoom-control" ng-class="{'no-zoom' : zoom === false || static}">
         <div class="btn-group-vertical btn-group">
             <button ng-click="zoomIn()" 
             ng-disabled="zoomLevel === zoomRange[1]" 

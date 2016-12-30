@@ -7,12 +7,18 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
             /**
              * Bus service 
              */
-            var BusService = $scope.$parent.busService;
+            var BusService = $scope.busService || $scope.$parent.busService;
 
             /**
              * Map service
              */
-            var MapService = $scope.$parent.mapService;
+            var MapService = $scope.mapService || $scope.$parent.mapService;
+
+            /**
+             * Map configuration
+             */
+
+            var mapConfig = $scope.mapConfig || $scope.$parent.mapConfig;
 
             /**
              * Polling frequency in milliseconds
@@ -176,7 +182,7 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
 
             function isMapLoaded(map) {
                 
-                var availableMaps = $scope.$parent.mapConfig.availableMaps;
+                var availableMaps = mapConfig.availableMaps;
                 for (var i = 0, len = availableMaps.length; i < len; i++) {
                     if (!map[availableMaps[i]]) {
                         return false;
@@ -206,7 +212,7 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
                     $scope.toggleRoute(routeTag, poll);
                 });
 
-                angular.forEach($scope.$parent.mapConfig.availableMaps, function(value) {
+                angular.forEach(mapConfig.availableMaps, function(value) {
                      loadMapData(value);
                 })
 
