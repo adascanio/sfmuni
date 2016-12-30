@@ -116,10 +116,22 @@ module.exports = function (grunt) {
         files: copyConfig.files
       }
     },
+    less : {
+      build: {
+        files : {
+          'public/css/style.css' : ['src/less/*.less']
+        }
+      },
+      dist: {
+         files : {
+          'public/css/style.css' : ['src/less/*.less']
+        }
+      }
+    },
     watch: {
       scripts: {
         files: ['src/**'],
-        tasks: ['clean:build', 'copy:build', 'concat:build'],
+        tasks: ['clean:build', 'copy:build', 'concat:build', 'less:build'],
         options: {
           spawn: false,
         }
@@ -133,9 +145,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-less');
 
   // Default task(s).
-  grunt.registerTask('build', ['clean:build', 'copy:build', 'concat:build']);
-  grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'concat:dist', 'uglify:dist']);
+  grunt.registerTask('build', ['clean:build', 'copy:build', 'concat:build', 'less:build']);
+  grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'concat:dist', 'uglify:dist', 'less:build']);
 
 };

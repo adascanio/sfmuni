@@ -3,9 +3,7 @@ angular.module('BusMap', ['MapCtrl'])
 
         function link(scope, element, attr) {
 
-            //scope.svgId = scope.svgId || '';
-
-            var svg = d3.select("#sf-map");
+            var svg = d3.select(element.find("svg")[0]);
             svg.append("g")
 
             var width = svg.style("width").replace(/px/g, '')
@@ -429,18 +427,7 @@ angular.module('BusMap', ['MapCtrl'])
                 busService : "=busservice",
                 mapService : "=mapservice",
                 static : "=static", //disable zoom and pan in one shot if true
-                mapConfig : "=mapconfig",
-                svgId : "=svgid"
-                //svgId : "=svgid"  //the id of the svg element
-                //map : "=map",
-                /*loaded : "=loaded",
-                toggleRouteOnLoad : "=toggleRouteOnLoad", // true select one arbitrary route | string select a specific route | false
-                routes : "=routes", //list of routes to be rendered
-                vehicles : "=vehicles", // vehicles to be rendered
-                config : "=config",
-                zoom : "=zoom", // eg {range [1,3], step 0.5, initial 2} | true (default [1,3] step 0.5 init 1 | false (no zoom) )
-                pan : "@pan", // default true
-                updateVehicles :  "=updateVehicles" // default true*/
+                mapConfig : "=mapconfig"
             }
 
         };
