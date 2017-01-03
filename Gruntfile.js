@@ -99,12 +99,6 @@ module.exports = function (grunt) {
           'public/js/models.js': ['src/js/models/*.js'],
           'public/js/controllers.js': ['src/js/controllers/*.js'],
           'public/js/services.js': ['src/js/services/*.js'],
-          'public/css/build.css': ['src/css/*.css']
-        }
-      },
-      dist: {
-        files :{
-          'public/css/build.css': ['src/css/*.css']
         }
       }
     },
@@ -149,6 +143,6 @@ module.exports = function (grunt) {
 
   // Default task(s).
   grunt.registerTask('build', ['clean:build', 'copy:build', 'concat:build', 'less:build']);
-  grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'concat:dist', 'uglify:dist', 'less:build']);
+  grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'uglify:dist', 'less:dist']);
 
 };

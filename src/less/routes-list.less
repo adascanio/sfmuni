@@ -1,0 +1,17 @@
+@import "mixins.less";
+
+ul {
+    &.route-list {
+        .drop-shadow(1px, 2px, 15px);
+    }
+}
+
+li {
+    &.route-item {
+        cursor: pointer;
+        background-color : #e7e7e7; 
+        &.selected {
+           font-weight: bolder; 
+        }
+    }
+}

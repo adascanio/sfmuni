@@ -299,14 +299,17 @@ angular.module('BusMap', ['MapCtrl'])
 
             function printMap() {
                 angular.forEach(mapConfig.availableMaps, function (value) {
-                    var emptyClass = '';
+                    var additionalClass = '';
                     if (value !== "neighborhoods") {
-                        emptyClass = 'empty-path';
+                        additionalClass = 'empty-path';
+                    }
+                    if (value === "streets") {
+                        additionalClass += ' zoom-visibility semi-visible';
                     }
                     drawPath({
                         selector: '.' + value,
                         attrs: {
-                            class: value + ' map-feature ' + emptyClass
+                            class: value + ' map-feature ' + additionalClass
                         },
                         data: scope.map[value].features
                     })
