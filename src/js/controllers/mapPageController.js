@@ -1,14 +1,14 @@
 angular.module('MapPageCtrl', ['CitiesServiceFactoryModule', 'RouteModule', 'RouteCollectionModule'])
     .controller('MapPageController',
-    ["$scope", "$timeout", "CitiesServiceFactory", "$routeParams", "Route", "RouteCollection", "$log"
-        , function ($scope, $timeout, CitiesServiceFactory, $routeParams, Route, RouteCollection, $log) {
+    ["$scope", "$timeout", "CitiesServiceFactory", "$routeParams", "Route", "RouteCollection", "$log","checkCityCode"
+        , function ($scope, $timeout, CitiesServiceFactory, $routeParams, Route, RouteCollection, $log, checkCityCode) {
 
             function rejectHandler(res) {
                 $log.error("An error has occurred");
                 $log.error(res);
             };
 
-            var cityCode = $routeParams.cityCode.toUpperCase();
+            var cityCode = checkCityCode.cityCode.toUpperCase();
 
             $scope.cities = CitiesServiceFactory.cities;
 

@@ -9,10 +9,30 @@ angular.module('appRoutes', []).config(['$routeProvider', '$locationProvider',
             })
             .when('/city/:cityCode', {
                 templateUrl: 'static/views/mapPage.html',
-                controller: 'MapPageController'
+                controller: 'MapPageController',
+                resolve : {
+                    checkCityCode : ['$q','CitiesServiceFactory','$route','$location',function($q,CitiesServiceFactory, $route, $location) {
+                        var deferred = $q.defer();
+
+                        var cityCode = $route.current.params.cityCode.toUpperCase();
+
+                        if (CitiesServiceFactory.cities[cityCode]) {
+                            deferred.resolve({cityCode : cityCode});
+                        }
+                        else {
+                            deferred.reject();
+                            $location.path("/city/SFO")
+                        }
+                        
+                        return deferred.promise;
+                        
+                    }]
+                }
             })
             .otherwise( '/')
 
         $locationProvider.html5Mode(true);
+
+       
 
     }]);
