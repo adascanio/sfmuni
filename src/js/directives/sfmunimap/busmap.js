@@ -421,7 +421,7 @@ angular.module('BusMap', ['MapCtrl'])
 
         return {
             restrict: 'E',
-            templateUrl: 'static/js/directives/sfmunimap/busmap.html',
+            templateUrl: 'static/js/directives/sfmunimap/busmap.tpl.html',
             link: link,
             controller: 'MapController',
             scope: {

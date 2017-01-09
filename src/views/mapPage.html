@@ -1,21 +1,14 @@
 <section>
-    <div ng-include src="'/static/views/navbar.html'"></div>
+    <!--<div ng-include src="'/static/views/navbar.html'"></div>-->
+    <navbar on-toggle-routes="toggleRoutesList()" cities="cities" routes="routes" routes-visible="routesListVisible"></navbar> 
     
     <!-- MAP CONTAINER-->
     <section class="map-container">
        <bus-map mapconfig="mapConfig" map="map" pan="pan" zoom="zoom" busservice="busService"  mapservice="mapService"></bus-map>
     </section>
 
-    <!-- LIST ROUTES -->
-    <aside class="routes-list-container" ng-class="{'visible' : routesListVisible}">
-        <ul class="routes-list list-group">
-            <li ng-repeat="(key, route) in routes.getAllAsArray() | orderBy:'rank'" 
-            class="route-item route-{{key}} list-group-item" 
-            ng-class="{ 'selected' : route.getSelected()}"
-            ng-style="route.getSelected() && {'background-color' : route.getColor(), 'color' : route.getOppositeColor()}"
-            ng-click=toggleRoute(route)>
-                <span>{{route.getTitle()}}</span><span ng-class="{'loader tiny' : route.getWaiting()}"></span>
-            </li>
-        </ul>
-    </aside>
+    <!-- LIST ROUTES-->
+    <list-routes routes-visible="routesListVisible" routes="routes" on-toggle-route="toggleRoute"></list-routes>
+
+    
 </section>
