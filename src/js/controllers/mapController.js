@@ -3,6 +3,10 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
     ["$scope", "$timeout", "$routeParams", "$q", "Route", "RouteCollection", "Vehicle", "VehicleCollection", "$log"
         , function ($scope, $timeout, $routeParams, $q, Route, RouteCollection, Vehicle, VehicleCollection, $log) {
 
+            /**
+             * Default Polling frequency in milliseconds
+             */
+            var DEFAULT_POLLING_TICK = 15000;
 
             /**
              * Bus service 
@@ -23,7 +27,7 @@ angular.module('MapCtrl', ['RouteModule', 'RouteCollectionModule', 'VehicleModul
             /**
              * Polling frequency in milliseconds
              */
-            var POLLING_TICK = $scope.$parent.POLLING_TICK || 15000;
+            var POLLING_TICK = $scope.$parent.POLLING_TICK || DEFAULT_POLLING_TICK;
 
             /**
              * Visible vehicles 

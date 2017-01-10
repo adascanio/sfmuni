@@ -68,6 +68,7 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     distdir: 'public',
+    sourcedir : 'src',
     pkg: grunt.file.readJSON('package.json'),
     clean: {
       build: {
@@ -131,6 +132,20 @@ module.exports = function (grunt) {
           spawn: false,
         }
       }
+    },
+    eslint: {
+      build :{
+        options: {
+            configFile: '.eslintrc.js'
+        },
+        src: ['src/**/*.js', '<%= distdir %>/js/directives/**/*.js','<%= distdir %>/js/*.js']
+      },
+      dist :{
+        options: {
+            configFile: '.eslintrc.js'
+        },
+        src: ['src/**/*.js', '<%= distdir %>/js/directives/**/*.js','<%= distdir %>/js/*.js']
+      }
     }
   });
 
@@ -145,7 +160,7 @@ module.exports = function (grunt) {
   
 
   // Default task(s).
-  grunt.registerTask('build', ['clean:build', 'copy:build', 'concat:build', 'less:build']);
+  grunt.registerTask('build', ['clean:build', 'copy:build', 'concat:build', 'eslint:build','less:build']);
   grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'uglify:dist', 'less:dist']);
 
 };

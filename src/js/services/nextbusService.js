@@ -2,6 +2,7 @@
 angular.module('NextBusService', [])
     .factory('NextBusFactory', ['$http', '$cacheFactory', '$q', '$location', function ($http, $cacheFactory, $q, $location) {
 
+        var ONE_MINUTE = 60000;
 
         var Service = function (agencyName) {
             this.agencyName = agencyName;
@@ -122,7 +123,7 @@ angular.module('NextBusService', [])
             var t = params.t;
             var r = params.r;
             if (t == null) {
-                t = new Date().getTime() - 60000;
+                t = new Date().getTime() - ONE_MINUTE;
             }
 
             var routeParam = '';

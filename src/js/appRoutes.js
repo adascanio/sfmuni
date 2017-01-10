@@ -33,6 +33,4 @@ angular.module('appRoutes', []).config(['$routeProvider', '$locationProvider',
 
         $locationProvider.html5Mode(true);
 
-       
-
     }]);

@@ -3,6 +3,9 @@ angular.module('BusMap', ['MapCtrl'])
 
         function link(scope, element, attr) {
 
+            var BUS_TRANSITION_SPEED = 15000;
+            var BUS_APPEAR_SPEED = 1000;
+
             var svg = d3.select(element.find("svg")[0]);
             svg.append("g")
 
@@ -223,9 +226,12 @@ angular.module('BusMap', ['MapCtrl'])
 
                 var rootGroup = svg.select("g");
 
-                //default values i.e. zoomConfig is true | undefined                
+                //default values i.e. zoomConfig is true | undefined
+
+                var MAX_ZOOM = 3;
+                var MIN_ZOOM = 1;             
                 scope.zoomLevel = 1;
-                scope.zoomRange = [1, 3];
+                scope.zoomRange = [MIN_ZOOM, MAX_ZOOM];
                 scope.zoomStep = 0.5;
 
                 if (zoomConfig instanceof Object) {
@@ -370,7 +376,7 @@ angular.module('BusMap', ['MapCtrl'])
                 
 
                 elms.transition()
-                    .duration(15000)
+                    .duration(BUS_TRANSITION_SPEED)
                     .ease(d3.easeLinear)
                     .attr("d", geoPath)
 
@@ -382,7 +388,7 @@ angular.module('BusMap', ['MapCtrl'])
 
                 enterElms = enterElms.append("path");
                 enterElms.transition()
-                    .duration(1000)
+                    .duration(BUS_APPEAR_SPEED)
                     .ease(d3.easeLinear)
                     .attr("fill", options.attrs.fill)
                     .attr("stroke", options.attrs.stroke);
@@ -392,14 +398,14 @@ angular.module('BusMap', ['MapCtrl'])
 
                     .on("click", function (d, i, elm) {
                         scope.$apply(function () {
-                            var selected = $(elm).hasClass("selected");
+                            var selected = angular.element(elm).hasClass("selected");
                             d3.select(".vehicle.selected").classed("selected", false);
 
                             scope.selectedVehicle = d.properties;
                             scope.showVehicleInfo = !selected
 
                             if (!selected) {
-                                $(elm).toggleClass("selected");
+                                angular.element(elm).toggleClass("selected");
                             }
 
 

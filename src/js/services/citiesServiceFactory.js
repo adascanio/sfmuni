@@ -2,6 +2,7 @@
 angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapServiceFactoryModule'])
     .factory('CitiesServiceFactory', ['BusServiceFactory', 'MapServiceFactory', function (BusServiceFactory, MapServiceFactory) {
 
+        /* eslint-disable */
         var cities = {
             SFO: {
                 code: "SFO",
@@ -40,6 +41,7 @@ angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapSer
                 }
             }
         }
+        /* eslint-enable */
 
         getBusService = function (cityCode) {
 
