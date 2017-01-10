@@ -3,11 +3,12 @@
 // modules =================================================
 var express        = require('express');
 var app            = express();
+var DEFAULT_PORT   = 8080;
 
 // configuration ===========================================
-    
+
 // set our port
-var port = process.env.PORT || 8080; 
+var port = process.env.PORT || DEFAULT_PORT; 
 
 // set the static files location /public/img will be /img for users
 app.use('/static', express.static(__dirname + '/public')); 

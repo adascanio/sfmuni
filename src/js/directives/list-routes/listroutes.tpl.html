@@ -1,11 +1,11 @@
 <aside class="routes-list-container" ng-class="{'visible' : routesListVisible}">
-        <ul class="routes-list list-group">
-            <li ng-repeat="(key, route) in routes.getAllAsArray() | orderBy:'rank'" 
-            class="route-item route-{{key}} list-group-item" 
-            ng-class="{ 'selected' : route.getSelected()}"
-            ng-style="route.getSelected() && {'background-color' : route.getColor(), 'color' : route.getOppositeColor()}"
-            ng-click=toggleRoute(route)>
-                <span>{{route.getTitle()}}</span><span ng-class="{'loader tiny' : route.getWaiting()}"></span>
-            </li>
-        </ul>
-    </aside>
+    <ul class="routes-list list-group">
+        <li ng-repeat="(key, route) in routes.getAllAsArray() | orderBy:'rank'" 
+        class="route-item route-{{key}} list-group-item" 
+        ng-class="{ 'selected' : route.getSelected()}"
+        ng-style="route.getSelected() && {'background-color' : route.getColor(), 'color' : route.getOppositeColor()}"
+        ng-click=toggleRoute(route)>
+            <span>{{route.getTitle()}}</span><span ng-class="{'loader tiny' : route.getWaiting()}"></span>
+        </li>
+    </ul>
+</aside>
