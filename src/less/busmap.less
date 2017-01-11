@@ -66,6 +66,7 @@ svg {
 }
 
 .vehicle-info {
+
     position: absolute;
     top: 80px;
     .enter(left, 0.5s, -300px);
@@ -92,6 +93,18 @@ svg {
     .vehicle-speed {
         font-size: 40px;
         font-weight: 500;
+    }
+
+    @media (max-width:767px) {
+        .enter(top, 0.5s, -300px);
+        left : 0px;
+        &.show {
+            top: @offset-top;
+            left : 0px;
+        }
+        width : 100vw;
+        
+
     }
 }
 
