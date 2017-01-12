@@ -3,7 +3,7 @@ angular.module('ListRoutes', [])
 
         return {
             restrict: 'E',
-            templateUrl: 'static/js/directives/list-routes/listroutes.tpl.html',
+            templateUrl: 'list-routes/listroutes.tpl.html',
             scope: {
                 routesListVisible: "=routesVisible",
                 routes: "=routes", 

@@ -8,7 +8,7 @@ angular.module('appRoutes', []).config(['$routeProvider', '$locationProvider',
                 redirectTo : '/city/SFO'
             })
             .when('/city/:cityCode', {
-                templateUrl: 'static/views/mapPage.html',
+                templateUrl: 'views/mapPage.tpl.html',
                 controller: 'MapPageController',
                 resolve : {
                     checkCityCode : ['$q','CitiesServiceFactory','$route','$location',function($q,CitiesServiceFactory, $route, $location) {

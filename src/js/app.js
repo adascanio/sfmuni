@@ -11,5 +11,7 @@ angular.module('sfmuniApp',
  'BusServiceFactoryModule',
  'MapServiceFactoryModule',
  'CitiesServiceFactoryModule',
- 'LocalMapServiceModule'
+ 'LocalMapServiceModule',
+ 'templates.directives',
+ 'templates.views'
  ]);

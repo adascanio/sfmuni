@@ -3,7 +3,7 @@ angular.module('NavBar', [])
 
         return {
             restrict: 'E',
-            templateUrl: 'static/js/directives/navbar/navbar.tpl.html',
+            templateUrl: 'navbar/navbar.tpl.html',
             scope: {
                 cities: "=cities",
                 routes: "=routes",

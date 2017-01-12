@@ -59,7 +59,7 @@ module.exports = function (grunt) {
       {
         expand: true,
         cwd: 'src/',
-        src: ['*.js', '**/*.html'],
+        src: ['*.js', '**/*.html','!**/*.tpl.html'],
         dest: '<%= distdir %>/'
       }
     ]
@@ -68,7 +68,14 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     distdir: 'public',
-    sourcedir : 'src',
+    src : {
+      js : ['src/js/*.js'],
+      directives : ['src/js/directives/**/*.js'],
+      models : ['src/js/models/*.js'],
+      controllers: ['src/js/controllers/*.js'],
+      services: ['src/js/services/*.js'],
+      less: ['src/less/*.less']
+    },
     pkg: grunt.file.readJSON('package.json'),
     clean: {
       build: {
@@ -85,22 +92,24 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          '<%= distdir %>/js/app.js': ['src/js/*.js'],
-          '<%= distdir %>/js/directives/directives.js': ['src/js/directives/**/*.js'],
-          '<%= distdir %>/js/models.js': ['src/js/models/*.js'],
-          '<%= distdir %>/js/controllers.js': ['src/js/controllers/*.js'],
-          '<%= distdir %>/js/services.js': ['src/js/services/*.js']
+          '<%= distdir %>/js/app.js': ['<%= src.js %>'],
+          '<%= distdir %>/js/directives/directives.js': ['<%= src.directives %>'],
+          '<%= distdir %>/js/models.js': ['<%= src.models %>'],
+          '<%= distdir %>/js/controllers.js': ['<%= src.controllers %>'],
+          '<%= distdir %>/js/services.js': ['<%= src.services %>'],
+          '<%= distdir %>/templates/templates_cache.js': ['<%= distdir %>/templates/*.js']
         }
       }
     },
     concat: {
       build: {
         files: {
-          '<%= distdir %>/js/app.js': ['src/js/*.js'],
-          '<%= distdir %>/js/directives/directives.js': ['src/js/directives/**/*.js'],
-          '<%= distdir %>/js/models.js': ['src/js/models/*.js'],
-          '<%= distdir %>/js/controllers.js': ['src/js/controllers/*.js'],
-          '<%= distdir %>/js/services.js': ['src/js/services/*.js'],
+          '<%= distdir %>/js/app.js': ['<%= src.js %>'],
+          '<%= distdir %>/js/directives/directives.js': ['<%= src.directives %>'],
+          '<%= distdir %>/js/models.js': ['<%= src.models %>'],
+          '<%= distdir %>/js/controllers.js': ['<%= src.controllers %>'],
+          '<%= distdir %>/js/services.js': ['<%= src.services %>'],
+          '<%= distdir %>/templates/templates_cache.js': ['<%= distdir %>/templates/*.js']
         }
       }
     },
@@ -115,19 +124,19 @@ module.exports = function (grunt) {
     less : {
       build: {
         files : {
-          '<%= distdir %>/css/style.css' : ['src/less/*.less']
+          '<%= distdir %>/css/style.css' : ['<%= src.less %>']
         }
       },
       dist: {
          files : {
-          '<%= distdir %>/css/style.css' : ['src/less/*.less']
+          '<%= distdir %>/css/style.css' : ['<%= src.less %>']
         }
       }
     },
     watch: {
       scripts: {
         files: ['src/**'],
-        tasks: ['clean:build', 'copy:build', 'concat:build', 'less:build'],
+        tasks: ['clean:build','html2js:directives','html2js:views', 'copy:build', 'concat:build', 'less:build'],
         options: {
           spawn: false,
         }
@@ -146,6 +155,29 @@ module.exports = function (grunt) {
         },
         src: ['src/**/*.js', '<%= distdir %>/js/directives/**/*.js','<%= distdir %>/js/*.js']
       }
+    },
+    html2js: {
+      htmlmin: {
+        collapseWhitespace: true,
+        removeEmptyAttributes: true,
+        removeRedundantAttributes: true,
+      },
+      directives: {
+        options: {
+          base: 'src/js/directives'
+        },
+        src: ['src/js/directives/**/*.tpl.html'],
+        dest: '<%= distdir %>/templates/directives.js',
+        module: 'templates.directives'
+      },
+      views: {
+        options: {
+          base: 'src/'
+        },
+        src: ['src/views/*.tpl.html'],
+        dest: '<%= distdir %>/templates/views.js',
+        module: 'templates.views'
+      }
     }
   });
 
@@ -157,10 +189,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-eslint');
+  grunt.loadNpmTasks('grunt-html2js');
   
 
   // Default task(s).
-  grunt.registerTask('build', ['clean:build', 'copy:build', 'concat:build', 'eslint:build','less:build']);
-  grunt.registerTask('dist', ['clean:dist', 'copy:dist', 'uglify:dist', 'less:dist']);
+  grunt.registerTask('build', ['clean:build','html2js:directives','html2js:views', 'copy:build', 'concat:build', 'eslint:build','less:build']);
+  grunt.registerTask('dist', ['clean:dist','html2js:directives','html2js:views', 'copy:dist', 'uglify:dist', 'less:dist']);
 
 };
