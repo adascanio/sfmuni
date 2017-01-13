@@ -41,13 +41,6 @@ module.exports = function (grunt) {
         dest: '<%= distdir %>/js/lib/d3'
       },
       //======================================
-      // Views
-      {
-        expand: true,
-        cwd: 'src/',
-        src: ['views/*.html'],
-        dest: '<%= distdir %>/'
-      },
       // Maps 
       {
         expand: true,
@@ -157,22 +150,29 @@ module.exports = function (grunt) {
       }
     },
     html2js: {
-      htmlmin: {
-        collapseWhitespace: true,
-        removeEmptyAttributes: true,
-        removeRedundantAttributes: true,
-      },
       directives: {
+        
         options: {
-          base: 'src/js/directives'
+          base: 'src/js/directives',
+          htmlmin: {
+            collapseWhitespace: true,
+            removeEmptyAttributes: true,
+            removeRedundantAttributes: true
+          }
         },
         src: ['src/js/directives/**/*.tpl.html'],
         dest: '<%= distdir %>/templates/directives.js',
         module: 'templates.directives'
       },
       views: {
+        
         options: {
-          base: 'src/'
+          base: 'src/',
+          htmlmin: {
+            collapseWhitespace: true,
+            removeEmptyAttributes: true,
+            removeRedundantAttributes: true
+          }
         },
         src: ['src/views/*.tpl.html'],
         dest: '<%= distdir %>/templates/views.js',
