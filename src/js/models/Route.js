@@ -1,5 +1,5 @@
 
-angular.module('RouteModule', []).factory('Route', [function (props) {
+angular.module('RouteModule', []).factory('Route', [function () {
 
     function Route(props) {
         this.tag = props.tag || "??";

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "grunt dist",
+    "postinstall": "grunt build",
     "start": "node server.js"
   },
   "keywords": [
@@ -32,7 +32,18 @@
     "grunt-contrib-less": "^1.4.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
+    "grunt-eslint": "^19.0.0",
+    "grunt-html2js": "^0.3.6",
     "jquery": "^3.1.1",
+    "string": "^3.3.3",
     "x2js": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.13.1",
+    "eslint-config-angular": "^0.5.0",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-angular": "^1.6.1",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1"
   }
 }

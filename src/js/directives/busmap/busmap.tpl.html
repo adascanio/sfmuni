@@ -1,0 +1,51 @@
+<div class="geomap-container " ng-class="{ 'loaded' : mapLoaded}">
+
+    <div class="panel panel-default vehicle-info" ng-class="{'show' : showVehicleInfo}">
+        <div class="panel-heading" ng-style="getInfoHeaderStyle(selectedVehicle.routeTag)">
+
+            {{selectedRoutes[selectedVehicle.routeTag].title}}
+
+
+            <button type="button" class="btn btn-default close-btn" ng-click="hideVehicleInfo()">
+                <span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </button>
+
+
+
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="vehicle-id col-xs-12">Vehicle id: {{selectedVehicle.id}}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    <span class="vehicle-speed">{{selectedVehicle.speedKmHr}}</span><span>Km/h</span>
+                </div>
+                <div class="col-sm-4 vehicle-heading">
+                    <span class="glyphicon glyphicon-arrow-up" aria-label="heading {{selectedVehicle.heading}}" ng-style="getInfoHeadingStyle(selectedVehicle)"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="wait-overlay">
+        <div class="loader"></div>
+    </div>
+    <svg class="geomap"></svg>
+
+    <div class="zoom-control" ng-class="{'no-zoom' : zoom === false || static}">
+        <div class="btn-group-vertical btn-group">
+            <button ng-click="zoomIn()" ng-disabled="zoomLevel === zoomRange[1]" class="btn btn-default" aria-label="zoom in" data-toggle="tooltip"
+                data-placement="left" title="Zoom in">
+                <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+            </button>
+            <button ng-click="zoomOut()" ng-disabled="zoomLevel === zoomRange[0]" class="btn btn-default" aria-label="zoom out" data-toggle="tooltip"
+                data-placement="right" title="Zoom out">
+                <span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+</div>

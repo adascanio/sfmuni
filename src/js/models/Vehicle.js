@@ -1,6 +1,6 @@
 
 angular.module('VehicleModule', [])
-    .factory('Vehicle', [function (props) {
+    .factory('Vehicle', [function () {
 
         function Vehicle(props) {
             this.id = props.id || "??";

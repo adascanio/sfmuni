@@ -1,0 +1,115 @@
+@import "mixins.less";
+
+path {
+    &.vehicle {
+        cursor : pointer;
+    }
+    &.neighborhoods {
+        fill: #dedede;
+    }
+    &.streets {
+        stroke : white;
+    }
+    &.arteries {
+        stroke : orange;
+    }
+    &.freeways {
+        stroke : green;
+    }
+    &.semi-visible {
+       .opacity(0.9);
+    }
+    &.empty-path {
+        fill : none;
+    }
+
+}
+
+svg {
+    &[data-zoom="1"] .zoom-visibility {
+        display: none;
+    }
+    &.geomap {
+       .full-size();
+       background-color: rgba(137, 182, 255, 0.8); 
+    }
+}
+
+.geomap-container {
+    .full-size();
+
+    &.loaded > .wait-overlay{
+        opacity : 0;
+        top : 10000px;
+        overflow: hidden;  
+    }
+    > .wait-overlay{
+        .transition(opacity 1000ms, top 1000ms 1000ms;);
+        position: absolute;
+        .absolute-overlay();
+        opacity : 0.8;
+        background-color: #fff;
+        z-index: 100;
+    }
+    position: relative;
+    overflow: hidden;
+}
+
+
+.zoom-control {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    &.no-zoom {
+        display : none;
+    }
+}
+
+.vehicle-info {
+
+    position: absolute;
+    top: 80px;
+    .enter(left, 0.5s, -300px);
+    min-width : 200px;
+    &.show {
+         left: 20px;
+    }
+    .close-btn {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        background-color: transparent;
+        border: none;
+    }
+
+    .vehicle-heading {
+        font-size: 30px;
+        > .glyphicon {
+            .transition(all 1s cubic-bezier(1,-1.18,.4,1.99););
+            
+        }
+
+    }
+    .vehicle-speed {
+        font-size: 40px;
+        font-weight: 500;
+    }
+
+    @media (max-width:767px) {
+        .enter(top, 0.5s, -300px);
+        left : 0px;
+        &.show {
+            top: @offset-top;
+            left : 0px;
+        }
+        width : 100vw;
+        
+
+    }
+}
+
+
+.vehicle.selected {
+    stroke : red;
+    stroke-width: 2px;
+}

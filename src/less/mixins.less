@@ -1,0 +1,49 @@
+@offset-top: 50px;
+
+.opaque(@opacity) {
+    opacity : @opacity;
+}
+
+.transition(...) {
+    -webkit-transition: @arguments;
+       -moz-transition: @arguments;
+         -o-transition: @arguments;
+            transition: @arguments;
+    
+}
+
+.opacity (@opacity: 0.5) {
+	-webkit-opacity: 	@opacity;
+	   -moz-opacity: 	@opacity;
+	        opacity: 	@opacity;
+}
+
+.drop-shadow (@x: 0, @y: 1px, @blur: 2px, @spread: 0, @alpha: 0.25) {
+	-webkit-box-shadow:	@x @y @blur @spread rgba(0, 0, 0, @alpha);
+	-moz-box-shadow:	@x @y @blur @spread rgba(0, 0, 0, @alpha);
+	box-shadow:		@x @y @blur @spread rgba(0, 0, 0, @alpha);
+}
+
+.enter(@from, @speed, @initial: 0, @type : ease-in-out) {
+    @{from} : @initial;
+    .transition(@from @speed @type;);
+}
+
+
+.absolute-overlay() {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right : 0;
+}
+
+.full-size() {
+    width : 100%;
+    height: 100%;
+}
+
+.full-screen() {
+    width : 100vw;
+    height: 100vh;
+}

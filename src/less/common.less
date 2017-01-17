@@ -1,0 +1,70 @@
+
+@loader-border-color : #f3f3f3;
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader-animation (@speed : 2s) {
+    -webkit-animation: spin @speed linear infinite;
+    animation: spin @speed linear infinite;
+}
+
+.loader-base() {
+    border-radius: 50%;
+}
+
+.loader-dimension (@dimension : 120px) {
+    width: @dimension;
+    height: @dimension;
+}
+.loader-style() {
+    border: 16px solid @loader-border-color;
+    border-top: 16px solid #3498db;
+    .loader-dimension;
+    .loader-animation;
+    margin: 15% auto;
+}
+
+.loader-style-small() {
+    .loader-dimension(26px);
+    border: 3px solid @loader-border-color;
+    border-top: 3px solid #888; 
+    .loader-animation(1s);
+}
+
+
+
+.map-container {
+    width : 100vw;
+    height: 100vh;
+}
+
+.container {
+    margin : 0px !important;
+    padding : 0px !important;
+}
+
+ul {
+    margin : 0;
+    padding : 0;
+    > li {    
+        list-style: none;
+    }
+}
+
+.loader {
+    .loader-base;
+    .loader-style;
+
+    &.tiny {
+        .loader-style-small;
+    }
+}
+

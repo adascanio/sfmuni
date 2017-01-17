@@ -3,6 +3,15 @@ angular.module('sfmuniApp',
  'appRoutes',
  'sfmuniAppCtrl',
  'NextBusService',
- 'HomeCtrl',
- 'SFmuniMap'
+ 'MapCtrl',
+ 'BusMap',
+ 'NavBar',
+ 'ListRoutes',
+ 'MapPageCtrl',
+ 'BusServiceFactoryModule',
+ 'MapServiceFactoryModule',
+ 'CitiesServiceFactoryModule',
+ 'LocalMapServiceModule',
+ 'templates.directives',
+ 'templates.views'
  ]);
