@@ -39,6 +39,18 @@ angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapSer
                     center: [0, 42.330],
                     availableMaps: ['neighborhoods'],
                 }
+            },
+            YTZ: {
+                code: "YTZ",
+                name: "Toronto",
+                busServiceName: "nextbus",
+                agencyName: "ttc",
+                mapConfig: {
+                    scale: 250000,
+                    rotate: [79.384293, 0],
+                    center: [0, 43.653908],
+                    availableMaps: ['neighborhoods'],
+                }
             }
         }
         /* eslint-enable */
