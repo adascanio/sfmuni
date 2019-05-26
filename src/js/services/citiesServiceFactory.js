@@ -42,7 +42,7 @@ angular.module('CitiesServiceFactoryModule', ['BusServiceFactoryModule', 'MapSer
             },
             YTZ: {
                 code: "YTZ",
-                name: "Toronto",
+                name: "Torano",
                 busServiceName: "nextbus",
                 agencyName: "ttc",
                 mapConfig: {
